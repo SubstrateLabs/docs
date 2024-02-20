@@ -1,18 +1,28 @@
-import React from 'react'
-import { DocsThemeConfig } from 'nextra-theme-docs'
+import { DocsThemeConfig } from "nextra-theme-docs";
+import { HeaderLogo } from "./components/HeaderLogo";
+import { useRouter } from "next/router";
 
 const config: DocsThemeConfig = {
-  logo: <span>My Project</span>,
-  project: {
-    link: 'https://github.com/shuding/nextra-docs-template',
-  },
-  chat: {
-    link: 'https://discord.com',
-  },
-  docsRepositoryBase: 'https://github.com/shuding/nextra-docs-template',
+  logo: HeaderLogo,
+  logoLink: false,
   footer: {
-    text: 'Nextra Docs Template',
+    component: null,
   },
-}
+  toc: {
+    component: null,
+  },
+  useNextSeoProps: () => {
+    const { asPath } = useRouter();
+    if (asPath !== "/") {
+      return {
+        titleTemplate: "%s – Substrate",
+      };
+    } else {
+      return {
+        title: "Substrate Docs",
+      };
+    }
+  },
+};
 
-export default config
+export default config;

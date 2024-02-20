@@ -1,0 +1,166 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+
+html.dark body {
+  background-color: #000 !important;
+  color: #FFF !important;
+}
+
+body {
+  background-color: #FFF !important;
+  color: #000 !important;
+}
+
+html.dark .logo {
+  filter: invert(1);
+  color: #000;
+}
+
+:is(html[class~=dark] .dark\:nx-text-neutral-400), :is(html[class~=dark] .dark\:nx-text-primary-600), :is(html[class~=dark] .dark\:nx-text-primary-800) {
+  color: #FFF !important;
+}
+
+html.dark .nx-text-gray-500 {
+  color: #FFF !important;
+}
+
+.nx-text-gray-500 {
+  color: #000 !important;
+}
+
+html.dark .nx-sticky {
+  box-shadow: none !important;
+  background-color: #000 !important;
+}
+
+.nx-sticky {
+  box-shadow: none !important;
+}
+
+.nextra-toc {
+  display: none !important;
+}
+
+.nextra-breadcrumb {
+  display: none !important;
+}
+
+.nx-text-gray-500,
+.nx-text-gray-600,
+.nx-text-slate-900,
+.nx-text-neutral-400,
+.nx-text-primary-600,
+.nx-text-primary-800 {
+  color: #000 !important;
+  text-decoration-color: #000 !important;
+}
+html.dark .nx-text-gray-500,
+html.dark .nx-text-gray-600,
+html.dark .nx-text-slate-900,
+html.dark .nx-text-neutral-400,
+html.dark .nx-text-primary-600,
+html.dark .nx-text-primary-800 {
+  color: #FFF !important;
+  text-decoration-color: #FFF !important;
+}
+
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo>span {
+  margin-left: 8px;
+  font: bold;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+  letter-spacing: -.05em;
+}
+
+html.dark .nextra-content {
+  color: #FFF !important;
+}
+
+.nextra-content {
+  color: #000 !important;
+}
+
+html.dark .nextra-nav-container {
+  border-color: #FFF;
+}
+
+.nextra-nav-container {
+  border-bottom-width: 1px;
+  border-color: #000;
+  border-style: dotted;
+}
+
+nav {
+  padding-left: 0 !important;
+  padding-right: 12px !important;
+}
+
+.nx-text-sm {
+  font-size: 16px !important;
+}
+
+.nav-link {
+  border-radius: 0 !important;
+}
+
+html.dark .nextra-sidebar-container {
+  border-color: #FFF;
+}
+
+.nextra-sidebar-container {
+  border-right-width: 1px;
+  border-color: #000;
+  border-style: dotted;
+}
+
+.nextra-sidebar-container a {
+  border-radius: 0;
+}
+
+html.dark .nextra-sidebar-container a {
+  background-color: #000;
+}
+
+.nextra-sidebar-container a {
+  background-color: #FFF;
+}
+
+html.dark .nextra-sidebar-container a:hover {
+  background-color: #FFF !important;
+  text-decoration-color: #000 !important;
+  color: #000 !important;
+}
+
+.nextra-sidebar-container a:hover {
+  background-color: #000 !important;
+  text-decoration-color: #FFF !important;
+  color: #FFF !important;
+}
+
+html.dark li.active a {
+  border-color: #FFF;
+  border-width: 1px;
+  border-left-width: 2px;
+}
+
+li.active a {
+  border-color: #000;
+  border-width: 1px;
+  border-left-width: 2px;
+}
+
+.nx-font-bold {
+  font-weight: 800;
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  letter-spacing: -.05em;
+}
