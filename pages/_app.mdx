@@ -28,16 +28,7 @@ export const ibmMono = IBM_Plex_Mono({
   weight: ["500"],
 });
 
-import type { AppProps } from "next/app";
-import { type ReactNode } from "react";
-
-type NextraAppProps = AppProps & {
-  Component: AppProps["Component"] & {
-    getLayout: (page: ReactNode) => ReactNode;
-  };
-};
-
-export default function Nextra({ Component, pageProps }: NextraAppProps) {
+export default function Nextra({ Component, pageProps }) {
   return (
     <main
       className={clsx(
