@@ -3,33 +3,22 @@
 @tailwind utilities;
 
 body {
-  /* background-color: #f6f6f6 !important; */
   background-color: transparent !important;
   color: #000 !important;
 }
 
 nav {
-  /* background-color: #f6f6f6 !important; */
   background-color: transparent !important;
   padding-left: 0 !important;
   padding-right: 10px !important;
-}
-
-.nextra-nav-container {
-  /* background-color: #f6f6f6 !important; */
 }
 
 .nextra-sidebar-container {
   min-height: 100vh;
 }
 
-.nextra-sidebar-container a {
-  /* background-color: #f6f6f6; */
-}
-
 .nextra-sidebar-container a:hover {
   background-color: #ebebec !important;
-  /* background-color: #ffffff !important; */
 }
 
 /* Remove stoplight buttons Codehike globally */
@@ -45,12 +34,9 @@ nav {
 /* larger font breadcrumb */
 .nextra-breadcrumb {
   font-size: 30px !important;
-  /* font-family: monospace; */
-  /* letter-spacing: -0.05em; */
 }
 
 /* semibold -> normal weight */
 .nx-font-semibold {
   font-weight: 400;
-  /* letter-spacing: -0.05em; */
 }

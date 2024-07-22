@@ -1,6 +1,7 @@
 import { DocsThemeConfig, useConfig } from "nextra-theme-docs";
 import { HeaderLogo } from "./components/HeaderLogo";
 import { useRouter } from "next/router";
+import ExtraNavContent, { EditLink } from "./components/NavExtras";
 
 const config: DocsThemeConfig = {
   logo: HeaderLogo,
@@ -8,7 +9,6 @@ const config: DocsThemeConfig = {
   footer: {
     component: null,
   },
-  // hide TOC: https://github.com/shuding/nextra/blob/8e86fc60deadf8d93114e313c770a0b611921e9b/packages/nextra-theme-docs/src/components/toc.tsx#L33
   feedback: {
     content: null,
   },
@@ -17,11 +17,8 @@ const config: DocsThemeConfig = {
   toc: {
     extraContent: null,
   },
-  editLink: {
-    component: null,
-  },
   search: {
-    placeholder: "Search guides",
+    placeholder: "Search docs",
   },
   useNextSeoProps() {
     const { frontMatter } = useConfig();
@@ -36,13 +33,17 @@ const config: DocsThemeConfig = {
       },
     };
   },
-  // navbar: {
-  //   extraContent: DashboardLink,
-  // },
+  navbar: {
+    extraContent: ExtraNavContent,
+  },
   nextThemes: {
     forcedTheme: "light",
   },
   darkMode: false,
+  docsRepositoryBase: "https://github.com/SubstrateLabs/docs/tree/main",
+  editLink: {
+    text: EditLink,
+  },
 };
 
 export default config;

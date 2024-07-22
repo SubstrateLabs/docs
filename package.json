@@ -1,5 +1,6 @@
 {
   "name": "docs.substrate.run",
+  "repository": "https://github.com/SubstrateLabs/docs",
   "private": true,
   "engines": {
     "node": ">=18.17.0"
