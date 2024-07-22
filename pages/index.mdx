@@ -1,11 +1,88 @@
-# Introduction
- 
-Welcome to Nextra! This is a basic docs template. You can use it as a starting point for your own project :)
+import { SmallCards, SmallCard } from "../components/SmallCards";
+import { Callout, Tabs } from "nextra/components";
+import Link from "next/link";
+import Image from "next/image";
+import {
+  ComputeText,
+  ComputeJSON,
+  GenerateImage,
+  GenerateSpeech,
+  UpscaleImage,
+} from "@/components/nodes";
+import { FirstGraph } from "@/components/diagrams/FirstGraph";
 
-## What is Nextra?
+Substrate is a **powerful SDK** for building with AI models, with [batteries included](https://substrate.run/nodes): language models, image generation, built-in vector storage, sandboxed code execution, and more.
 
-A **simple**, **powerful** and **flexible** site generation framework with everything you love from Next.js.
+Substrate is also an **inference engine optimized for running compound AI workloads**. Wiring together multiple inference APIs is inherently slow – whether you do it yourself, or use a framework like LangChain. Substrate lets you ditch the framework, write less code, and run compound AI fast. Learn more: [Why Substrate?](/why)
 
-## Documentation
+### Mini examples
 
-The documentation is available at [https://nextra.site](https://nextra.site).
+Substrate is the **simplest** way to write multi-step AI programs. Each example below is hosted in a runnable code environment, so you can get a feel for Substrate without opening your editor.
+
+<Tabs items={['Wrangle structured data', 'Image generation', 'Hacker News research', 'Spanish lesson']}>
+<Tabs.Tab>
+
+Take a JSON object and transform it into the target schema. <ComputeJSON /> produces 100% guaranteed JSON output. (Unreliable JSON generation is a common pain point with other providers.)
+
+You can run this code (hit "Preview") or [view on val.town](https://www.val.town/v/substrate/shapeshift)
+
+<iframe
+  width="100%"
+  height="500px"
+  src="https://www.val.town/embed/substrate/shapeshift"
+  title="Generate and reshape structured data"
+  allow="web-share"
+  allowFullScreen
+></iframe>
+
+</Tabs.Tab>
+<Tabs.Tab>
+
+Describe an image with <ComputeText />, generate the image with <GenerateImage />, and upscale it with <UpscaleImage />. Substrate is the most elegant way to chain multiple models.
+
+You can run this code (hit "Preview") or [view on val.town](https://www.val.town/v/substrate/imageGeneration)
+
+<iframe
+  width="100%"
+  height="500px"
+  src="https://www.val.town/embed/substrate/imageGeneration"
+  title="Image Generation Example"
+  allow="web-share"
+  allowFullScreen
+></iframe>
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+Search Hacker News comments, extract sentiment and summarize with <ComputeJSON />, and generate a markdown report with <ComputeText />. The code is minimal, simply relating tasks to each other. Substrate automatically parallelizes dozens of JSON extraction tasks, and injects their results into the final summarization task.
+
+You can run this code (hit "Preview") or [view on val.town](https://www.val.town/v/substrate/hackerNewsRAG).
+
+<iframe
+  width="100%"
+  height="500px"
+  src="https://www.val.town/embed/substrate/hackerNewsRAG"
+  title="Hacker News research"
+  allow="web-share"
+  allowFullScreen
+></iframe>
+
+</Tabs.Tab>
+<Tabs.Tab>
+
+Generate sentences in Spanish and English with <ComputeText />, add images with <GenerateImage />, create Spanish speech samples with <GenerateSpeech />, then generate an HTML page with <ComputeText />.
+
+You can run this code (hit "Preview") or [view on val.town](https://www.val.town/v/substrate/spanishVocabLesson).
+
+<iframe
+  width="100%"
+  height="500px"
+  src="https://www.val.town/embed/substrate/spanishVocabLesson"
+  title="Spanish lesson"
+  allow="web-share"
+  allowFullScreen
+></iframe>
+
+</Tabs.Tab>
+</Tabs>

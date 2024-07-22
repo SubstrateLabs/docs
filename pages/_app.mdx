@@ -1,51 +1,32 @@
 import "../styles.css";
-import { clsx } from "clsx";
-
-import {
-  IBM_Plex_Mono,
-  IBM_Plex_Sans,
-  IBM_Plex_Sans_Condensed,
-} from "next/font/google";
-
-export const IBMPlexSans = IBM_Plex_Sans({
-  variable: "--font-ibm-sans",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["500"],
-});
-
-export const IBMPlexSansCondensed = IBM_Plex_Sans_Condensed({
-  variable: "--font-condensed",
-  subsets: ["latin"],
-  display: "swap",
-  weight: "400",
-});
-
-export const ibmMono = IBM_Plex_Mono({
-  variable: "--font-ibm-mono",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["500"],
-});
+import "@code-hike/mdx/dist/index.css";
+import "../codehike.css";
+import MarketingFooter from "../components/MarketingFooter";
+import Head from "next/head";
+import { cn } from "@/components/lib/utils";
+import { AtkinsonHyperlegible } from "@/fonts";
 
 export default function Nextra({ Component, pageProps }) {
-  return (
-    <>
-    <style jsx global>{`
-        html {
-          font-family: ${IBMPlexSans.style.fontFamily};
-        }
-      `}</style>
-    <main
-      className={clsx(
-        IBMPlexSans.variable,
-        ibmMono.variable,
-        IBMPlexSansCondensed.variable,
-        "font-sans"
-      )}
-    >
-      <Component {...pageProps} />
-      </main>
-      </>
-  );
+return (<main>
+
+  <Head>
+    <meta property="icon" content="/favicon.ico" />
+    <meta property="title" content="Substrate Documentation" key="title" />
+    <meta property="twitter:title" content="Substrate Documentation" key="title" />
+    <meta property="og:title" content="Substrate Documentation" key="title" />
+    <meta property="twitter:image" content="/og-image-v3.png" />
+    <meta property="og:image" content="/og-image-v3.png" />
+    <meta property="twitter:site" content="@SubstrateLabs" />
+    <meta property="description" content="The platform for compound AI. Powerful SDKs, with batteries included: optimized AI models, vector storage, code interpreter, and agentic control flow. Stop using LangChain." />
+    <meta property="twitter:description" content="The platform for compound AI. Powerful SDKs, with batteries included: optimized AI models, vector storage, code interpreter, and agentic control flow. Stop using LangChain." />
+    <meta property="og:description" content="The platform for compound AI. Powerful SDKs, with batteries included: optimized AI models, vector storage, code interpreter, and agentic control flow. Stop using LangChain." />
+    <meta property="og:url" content="https://docs.substrate.run" />
+  </Head>
+  <div className={
+    cn("w-full h-full")}>
+    <Component {...pageProps} />
+    <MarketingFooter />
+  </div>
+  <style jsx global>{` html { font-family: ${AtkinsonHyperlegible.style.fontFamily}; } `}</style>
+  </main>);
 }

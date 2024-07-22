@@ -1,5 +1,8 @@
 {
   "index": "Introduction",
-  "another": "Another Page",
-  "advanced": "Advanced (A Folder)"
+  "overview": "Overview",
+  "why": "Why Substrate?",
+  "changelog": "Changelog",
+  "guides": "Guides",
+  "reference": "Reference"
 }
