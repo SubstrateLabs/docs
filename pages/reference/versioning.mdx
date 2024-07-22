@@ -1,0 +1,17 @@
+import { Callout } from "nextra/components";
+
+<Callout emoji="֍">Versioning scheme for the Substrate API and SDKs</Callout>
+
+When backwards-incompatible changes are made to the API, we release a new API version, in the form of a date string, and update the [Changelog](/changelog).
+
+Each Substrate SDK release is pinned to an API version.
+SDK versions follow [semantic versioning](https://semver.org/) with the following components:
+
+`<SDK_MAJOR><API_VERSION>.<SDK_MINOR>.<SDK_PATCH>`
+
+`020240101.3.2` is an example SDK version string with 4 components:
+
+- `0` – `SDK_MAJOR` – backwards-incompatible SDK changes
+- `20240101` – `API_VERSION` – backwards-incompatible API changes
+- `3` – `SDK_MINOR` – backwards-compatible SDK changes
+- `1` – `SDK_PATCH` – minor SDK changes

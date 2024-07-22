@@ -1,0 +1,147 @@
+import { Callout } from "nextra/components";
+import { ComputeText, ComputeJSON } from "@/components/nodes";
+import Diagram from "@/components/diagrams/extract-and-summarize";
+
+<Callout emoji="֍">
+  Learn how to extract information (including sentiment analysis) and generate a
+  summary (RAG)
+</Callout>
+
+In this guide, we'll show you how to search Hacker News comments for a topic, extract sentiment, and generate a research summary using Substrate.
+
+This concise RAG implementation runs dozens of LLM calls in parallel and streams the markdown result. It's easy to remix the runnable TypeScript code below, [hosted on val.town](https://www.val.town/v/substrate/hackerNewsRAG).
+
+<br />
+
+<iframe
+  width="100%"
+  height="600px"
+  src="https://www.val.town/embed/substrate/hackerNewsRAG"
+  title="Val Town"
+  frameborder="0"
+  allow="web-share"
+></iframe>
+
+First, we search HackerNews comments using the [Algolia HN Search API](https://hn.algolia.com/api).
+
+<CH.Code>
+
+```typescript TypeScript
+const searchResults = await hnSearch({
+  query: query,
+  numericFilters: `created_at_i>${Math.floor(Date.now() / 1000) - 60 * 60 * 24 * 7 * 4}`,
+  tags: "comment",
+});
+```
+
+</CH.Code>
+
+Next, we use ComputeJSON to extract summary, sentiment, and other metadata from each comment. In TypeScript, we use [zod](https://zod.dev/) and [zod-to-json-schema](https://www.npmjs.com/package/zod-to-json-schema) to create the JSON schema. In Python, we use [Pydantic](https://docs.pydantic.dev/latest/).
+
+<CH.Code>
+
+```typescript TypeScript
+const commentInfo = z.object({
+  summary: z
+    .string()
+    .describe(
+      "Summarize in a couple sentences: who is commenting, what the comment is about, how it is related to the topic.",
+    ),
+  storyTitle: z.string().describe("The story title."),
+  forHiring: z
+    .boolean()
+    .describe(
+      "True if the story is a Ask HN post with Who is hiring, Who wants to be hired, or Seeking freelancer in the title",
+    ),
+  sentiment: z
+    .enum(["positive", "neutral", "negative"])
+    .describe("Sentiment of the post."),
+  objectID: z.string().describe("objectID field"),
+});
+
+let summaries = [];
+for (const hit of searchResults.hits) {
+  summaries.push(
+    new ComputeJSON({
+      prompt: `Summarize this comment and how it relates to the topic: ${query}
+      Use "negative" sentiment for posts about API, abstraction, documentation, tutorial, general quality, slowness, or performance issues.
+      COMMENT: ${JSON.stringify(hit)}`,
+      json_schema: zodToJsonSchema(commentInfo),
+    }),
+  );
+}
+```
+
+```python Python
+class Sentiment(str, Enum):
+    positive = "positive"
+    neutral = "neutral"
+    negative = "negative"
+
+class CommentInfo(BaseModel):
+    summary: str = Field(..., description="Summarize in a couple sentences: who is commenting, what the comment is about, how it is related to the topic.")
+    storyTitle: str = Field(..., description="The story title.")
+    forHiring: bool = Field(..., description="True if the story is a Ask HN post with Who is hiring, Who wants to be hired, or Seeking freelancer in the title")
+    sentiment: Sentiment = Field(..., description="Sentiment of the post.")
+    objectID: str = Field(..., description="objectID field")
+
+summaries = []
+for hit in searchResults.hits:
+    summaries.append(
+        ComputeJSON(
+            prompt=sb.concat("Summarize this comment and how it relates to the topic: ",
+            "\nTOPIC: ", query,
+            "\nCOMMENT: ", json.dumps(hit)),
+            json_schema=CommentInfo.model_json_schema(),
+        ),
+    );
+}
+```
+
+</CH.Code>
+
+Finally, we use ComputeText to generate a markdown summary of all the extracted JSON, and stream the results of the `markdown` node.
+
+<CH.Code>
+
+```typescript TypeScript
+const markdown = new ComputeText({
+  prompt: sb.concat(
+    `Below is a list of summarized comments about ${query} on Hacker News.
+  Generate concise markdown summarizing the results.
+  Summarize the contents of the comment and the sentiment about ${query}.
+  Categorize results under sentiment headers.
+  Order from most negative to least negative within each category.
+  Add a link to the original story URL in this format: [<story title>](https://news.ycombinator.com/item?id=<objectID>)
+  Filter out posts that do not seem to be about ${query}.
+  RESULTS:\n`,
+    ...summaries.map((s) => sb.jq(s.future.json_object, "@json")),
+  ),
+  model: "Llama3Instruct70B",
+});
+const stream = await substrate.stream(markdown);
+```
+
+```python Python
+markdown = ComputeText(
+  prompt=sb.concat(
+    "Below is a list of summarized comments about ", query, " on Hacker News.",
+  "\nGenerate concise markdown summarizing the results."
+  "\nSummarize the contents of the comment and the sentiment about ", query,
+  """\nCategorize results under sentiment headers.
+  Order from most negative to least negative within each category.
+  Add a link to the original story URL in this format: [<story title>](https://news.ycombinator.com/item?id=<objectID>)
+  Filter out posts that do not seem to be about """, query,
+  "\nRESULTS:\n",
+    ...summaries.map((s) => sb.jq(s.future.json_object, "@json")),
+  ),
+  model="Llama3Instruct70B",
+)
+stream = substrate.stream(markdown)
+```
+
+</CH.Code>
+
+The code we wrote was really simple. Implicitly, we were creating the graph below. But we didn't have to think about the graph at all! With Substrate, by simply relating tasks to each other, we get automatic parallelization of dozens of LLM calls for free, and 0 roundtrips.
+
+<Diagram />

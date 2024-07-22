@@ -1,0 +1,153 @@
+import { Callout } from "nextra/components";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import Image from "next/image";
+import Link from "next/link";
+import {
+  GenerateImage,
+  RemoveBackground,
+  EraseImage,
+} from "@/components/nodes";
+
+<Callout emoji="֍">
+  Generate an image, remove the background, and fill the foreground
+</Callout>
+
+In this example, we'll create a branching image generation workflow that:
+
+- Generates an image using <GenerateImage/>
+- Removes the background from the image using <RemoveBackground/>
+- Generates a masked foreground from the image using <RemoveBackground/>, with _`return_mask`_ enabled
+- Fills the masked foreground using <EraseImage/>
+
+First, initialize Substrate:
+
+<CH.Code >
+
+```python Python
+from substrate import (
+    Substrate,
+    GenerateImage,
+    RemoveBackground,
+    EraseImage,
+    sb,
+)
+
+s = Substrate(api_key=YOUR_API_KEY)
+
+```
+
+```typescript TypeScript
+import {
+  Substrate,
+  GenerateImage,
+  RemoveBackground,
+  EraseImage,
+  sb,
+} from "substrate";
+
+const s = new Substrate({ api_key: YOUR_API_KEY });
+```
+
+</CH.Code >
+
+Create and connect four nodes and run them:
+
+<CH.Code>
+
+```python Python
+image = GenerateImage(
+    prompt="a dark red chesterfield leather wing chair in a dark majestic room, pillars, celestial galaxy wallpaper",
+)
+bg = RemoveBackground(image_uri=image.future.image_uri)
+mask = RemoveBackground(
+    image_uri=image.future.image_uri,
+    return_mask=True,
+)
+erase = EraseImage(
+    image_uri=image.future.image_uri,
+    mask_image_uri=mask.future.image_uri,
+)
+res = s.run(erase)
+```
+
+```typescript TypeScript
+const image = new GenerateImage({
+  prompt:
+    "a dark red chesterfield leather wing chair in a dark majestic room, celestial galaxy wallpaper",
+});
+const bg = new RemoveBackground({ image_uri: image.future.image_uri });
+const mask = new RemoveBackground({
+  image_uri: image.future.image_uri,
+  return_mask: true,
+});
+const erase = new EraseImage({
+  image_uri: image.future.image_uri,
+  mask_image_uri: mask.future.image_uri,
+});
+const res = await s.run(erase);
+```
+
+</CH.Code>
+
+<Link
+  href="https://explore.substrate.run/s/eNrNlFtv0zAUx7-KZfUxSIOu3dY3JsYugNq1Qkyg6ci1T1MTJ7ZO7HZdle8-OxQWxJAoAmlvORfbv_-5ZMsrq7Dmoy9brhUftWZ_cAJh8GKtr9DwrHXFyDlWSMLjZSlyjG5BeTy35Y5s6XxMEEwJKhihYnKJtUdaaDSKGRR-icTWuspjRGhiumK77FJ8jalaMrK2zJhEk0xhWC6MuNuwtTDGCYfEm4xDvbTBKLDBu-AhN3Yewxs-8hSwyboShgeA80_mbnwYHiVMsbQrPBWyyMmGSnVU6KQKAulkAPR6s1M4n76eXMB4Apdvej2AeMEi-EA4PO6DLQ8-3xzdLHmzJ9dL6A834zMnV_-BawDXi3B9EWarVC7C6K2gFHXxHWUv1FcQPpjJu0Vx-Ih6RqL-ZQT2gzwCdz-HcgbTBJnoYL8LTkC9nVwd3398_wfVv8125zpD_kQbM640ofR6hYnBb1xS60nIJNSSznUFqQbwuzWxDmofW9g-8-2FNrcKxmS8wAjUKVQsnpRY15bS5ngf5_u2-VH_J_r5PAE7vXyegJ1Z-RvAn9f1XwDGeUSVt9MYP3Wl098OdpvUNA9WSOZW"
+  target="_blank"
+  className="text-sm bg-white px-3 py-1 rounded border"
+>
+  <span>{"Run this example"}</span>
+</Link>
+
+<div className="grid grid-cols-1 lg:grid-cols-2 mt-4 w-full">
+  <Card>
+    <CardContent className="flex justify-center pt-1">
+      <Image
+        src="https://media.substrate.run/chesterfield.jpeg"
+        width={300}
+        height={300}
+        alt="image"
+      />
+    </CardContent>
+    <CardFooter className="w-full flex justify-center">
+      _`res.get(image)`_
+    </CardFooter>
+  </Card>
+  <Card>
+    <CardContent className="flex justify-center pt-1">
+      <Image
+        src="https://media.substrate.run/chesterfield-no-bg.jpeg"
+        width={300}
+        height={300}
+        alt="no background"
+      />
+    </CardContent>
+    <CardFooter className="w-full flex justify-center">
+      _`res.get(removeBg)`_
+    </CardFooter>
+  </Card>
+  <Card>
+    <CardContent className="flex justify-center pt-1">
+      <Image
+        src="https://media.substrate.run/chesterfield-mask.jpeg"
+        width={300}
+        height={300}
+        alt="image"
+      />
+    </CardContent>
+    <CardFooter className="w-full flex justify-center">
+      _`res.get(removeBgMask)`_
+    </CardFooter>
+  </Card>
+  <Card>
+    <CardContent className="flex justify-center pt-1">
+      <Image
+        src="https://media.substrate.run/chesterfield-only-bg.jpeg"
+        width={300}
+        height={300}
+        alt="image"
+      />
+    </CardContent>
+    <CardFooter className="w-full flex justify-center">
+      _`res.get(fillMask)`_
+    </CardFooter>
+  </Card>
+</div>

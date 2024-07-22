@@ -1,0 +1,212 @@
+import { Callout } from "nextra/components";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import Image from "next/image";
+import Link from "next/link";
+import {
+RemoveBackground,
+StableDiffusionXLControlNet,
+StableDiffusionXLInpaint,
+} from "@/components/nodes";
+
+<Callout emoji="֍">Use a mask to generate images</Callout>
+
+In this example, we'll generate a mask from a logo image with <RemoveBackground/>, and use that mask to generate variations of the image using two workflows:
+
+1. Using <StableDiffusionXLControlNet /> with the `illusion` method to generate illusions incorporating the mask.
+2. Using <StableDiffusionXLControlNet /> with the `edge` method followed by <StableDiffusionXLInpaint /> to fill a mask with content and then generate inside the mask.
+
+First, initialize Substrate:
+
+<CH.Code >
+
+```python Python
+from substrate import (
+    Substrate,
+    RemoveBackground,
+    StableDiffusionXLControlNet,
+    StableDiffusionXLInpaint,
+)
+
+s = Substrate(api_key=YOUR_API_KEY)
+
+```
+
+```typescript TypeScript
+import {
+  Substrate,
+  RemoveBackground,
+  StableDiffusionXLControlNet,
+  StableDiffusionXLInpaint,
+} from "substrate";
+
+const s = new Substrate({ api_key: YOUR_API_KEY });
+```
+
+</CH.Code >
+
+Here's the original image:
+
+<div className="grid grid-cols-1 mt-4 w-full">
+  <Card>
+    <CardContent className="flex justify-center pt-1 pb-0">
+      <Image
+        src="https://media.substrate.run/logo-sq.png"
+        width={300}
+        height={300}
+        alt="original"
+      />
+    </CardContent>
+  </Card>
+</div>
+
+### 1. Generate illusions
+
+This workflow uses <RemoveBackground /> to generate a mask, followed by <StableDiffusionXLControlNet /> with the `illusion` method to generate a two images incorporating the mask into a view of the ocean from above:
+
+<CH.Code >
+
+```python Python
+mask = RemoveBackground(image_uri="https://media.substrate.run/logo-sq.png", return_mask=True)
+controlnet = StableDiffusionXLControlNet(
+    image_uri=mask.future.image_uri,
+    control_method="illusion",
+    conditioning_scale=1,
+    prompt="sunlit bright birds-eye view of the ocean, turbulent choppy waves",
+    num_images=2,
+)
+res = s.run(controlnet)
+```
+
+```typescript TypeScript
+const mask = new RemoveBackground({
+  image_uri: "https://media.substrate.run/logo-sq.png",
+  return_mask: true,
+});
+const controlnet = new StableDiffusionXLControlNet({
+  image_uri: mask.future.image_uri,
+  control_method: "illusion",
+  conditioning_scale: 1,
+  prompt: "sunlit bright birds-eye view of the ocean, turbulent choppy waves",
+  num_images: 2,
+});
+const res = await s.run(controlnet);
+```
+
+</CH.Code >
+
+<div className="grid grid-cols-1 lg:grid-cols-2 mt-4 w-full">
+  <Card>
+    <CardContent className="flex justify-center pt-1 pb-0">
+      <Image
+        src="https://media.substrate.run/illusion-1.jpg"
+        width={300}
+        height={300}
+        alt="image"
+      />
+    </CardContent>
+  </Card>
+  <Card>
+    <CardContent className="flex justify-center pt-1 pb-0">
+      <Image
+        src="https://media.substrate.run/illusion-2.jpg"
+        width={300}
+        height={300}
+        alt="no background"
+      />
+    </CardContent>
+  </Card>
+</div>
+
+Experimenting with different prompts can produce striking results:
+
+<div className="grid grid-cols-1 lg:grid-cols-2 mt-4 w-full">
+  <Card>
+    <CardContent className="flex justify-center pt-1 pb-0">
+      <Image
+        src="https://media.substrate.run/logo-atlantis-1.jpg"
+        width={300}
+        height={300}
+        alt="image"
+      />
+    </CardContent>
+  </Card>
+  <Card>
+    <CardContent className="flex justify-center pt-1 pb-0">
+      <Image
+        src="https://media.substrate.run/logo-atlantis-2.jpg"
+        width={300}
+        height={300}
+        alt="no background"
+      />
+    </CardContent>
+  </Card>
+</div>
+
+### 2. Generate a variation and inpaint
+
+This workflow uses <StableDiffusionXLControlNet /> to generate a variation of the original, and <StableDiffusionXLInpaint /> to generate a variation inpainting inside a mask.
+
+<CH.Code >
+
+```python Python
+original = "https://media.substrate.run/logo-nopad-bg-white.png"
+controlnet = StableDiffusionXLControlNet(
+    image_uri=original,
+    control_method="depth",
+    prompt="silver disco ball, 4k",
+    conditioning_scale=0.8,
+    num_images=1,
+)
+inpaint = StableDiffusionXLInpaint(
+    image_uri=controlnet.future.outputs[0].image_uri,
+    mask_image_uri=mask.future.image_uri,
+    prompt="towers in the futuristic ancient solarpunk city of atlantis",
+    num_images=1,
+)
+res = s.run(inpaint)
+```
+
+```typescript TypeScript
+const original = "https://media.substrate.run/logo-nopad-bg-white.png";
+const controlnet = new StableDiffusionXLControlNet({
+  image_uri: original,
+  control_method: "edge",
+  prompt: "silver disco ball, 4k",
+  conditioning_scale: 0.8,
+  num_images: 1,
+});
+const inpaint = new StableDiffusionXLInpaint({
+  image_uri: controlnet.future.outputs.at(0).image_uri,
+  mask_image_uri: original,
+  prompt: "towers in the futuristic ancient solarpunk city of atlantis",
+  num_images: 1,
+});
+const res = await s.run(inpaint);
+```
+
+</CH.Code >
+
+<div className="grid grid-cols-1 lg:grid-cols-2 mt-4 w-full">
+  <Card>
+    <CardContent className="flex justify-center pt-1 pb-0">
+      <Image
+        src="https://media.substrate.run/ex-controlnet.jpeg"
+        width={300}
+        height={300}
+        alt="image"
+      />
+    </CardContent>
+    <CardFooter className="flex justify-center">_`res.get(controlnet)`_</CardFooter>
+  </Card>
+  <Card>
+    <CardContent className="flex justify-center pt-1 pb-0">
+      <Image
+        src="https://media.substrate.run/ex-cn-inpaint.webp"
+        width={300}
+        height={300}
+        alt="no background"
+      />
+    </CardContent>
+    <CardFooter className="flex justify-center">_`res.get(inpaint)`_</CardFooter>
+  </Card>
+</div>

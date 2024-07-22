@@ -1,0 +1,51 @@
+import { Callout } from "nextra/components";
+import { TranscribeSpeech } from "@/components/nodes";
+
+<Callout emoji="֍">Read from and write to your own file storage</Callout>
+
+Substrate nodes can read from and write to your own external file storage. Currently, Substrate supports connections to [Amazon S3](/external-files/s3).
+
+You can manage external file storage connections in the [Substrate Dashboard](https://www.substrate.run/dashboard/external-files).
+
+### S3 Inputs
+
+You can use S3 URIs as inputs to nodes. For example, if you have an audio file stored in an S3 bucket named `my-bucket` and want to use it as an input to <TranscribeSpeech/>,
+you can set `audio_uri` to `s3://my-bucket/<filename>`.
+
+<CH.Code>
+
+```python Python
+transcribe = TranscribeSpeech(audio_uri="s3://my-bucket/input.wav")
+```
+
+```typescript TypeScript
+const transcribe = new TranscribeSpeech({
+  audio_uri: "s3://my-bucket/input.wav",
+});
+```
+
+</CH.Code>
+
+### S3 Outputs
+
+You can write outputs to S3 URIs from nodes. For example, if you've linked an S3 bucket named `my-bucket` and want to write an output to that bucket, you can set the `store` parameter to `s3://my-bucket/<filename>`.
+
+<CH.Code>
+
+```python Python
+image = GenerateImage(
+    prompt="oil painting",
+    # mark
+    store="s3://my-bucket/output.jpeg"
+)
+```
+
+```typescript TypeScript
+const image = new GenerateImage({
+  prompt: "oil painting",
+  // mark
+  store: "s3://my-bucket/output.jpeg",
+});
+```
+
+</CH.Code>

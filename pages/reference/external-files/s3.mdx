@@ -1,0 +1,72 @@
+import { Callout } from "nextra/components";
+
+<Callout emoji="֍">Connect to your own AWS S3 bucket</Callout>
+
+Substrate accesses your Amazon S3 buckets using credentials that you provide. You can register these credentials with Substrate in the [Dashboard](https://www.substrate.run/dashboard/external-files).
+Substrate securely stores your credentials and uses them to access your S3 buckets when you schedule a graph run.
+
+## 1. Register AWS Credentials
+
+There are two ways you can register AWS credentials with Substrate: a [Cross Account Role](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user.html) or an [Access Key](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html).
+
+### Cross Account Role
+
+Cross-account roles are the recommended way to provide secure access to your AWS resources.
+
+You can configure a cross-account role for Substrate with the following steps:
+
+1. Navigate to [External Files](https://www.substrate.run/dashboard/external-files) in the Substrate Dashboard. Create a new Credential and select **Cross-account role** as the credential type.
+2. Provide a unique display name for the credential and take note of the **AWS Account ID** and the **External ID** displayed near the bottom of the form.
+3. Visit the [AWS Console](https://aws.amazon.com/console/), navigate to **IAM** and then **Roles**.
+4. Click **Create Role**. Under **Trusted entity type**, choose **AWS account**. Select **Another AWS account** and click _Require external ID_.
+5. Enter the **AWS Account ID** and **External ID** that you copied from the Substrate Dashboard and click next.
+6. Then, on the Add Permissions screen, attach permissions to the role. Click next and enter a name and description for the role. You should see a trust policy similar to this:
+
+<CH.Code className="aws-ch-json-blob">
+
+```json focus=7:14
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "AWS": "018062818227"
+      },
+      "Condition": {
+        "StringEquals": {
+          "sts:ExternalId": "<YOUR_EXTERNAL_ID>"
+        }
+      }
+    }
+  ]
+}
+```
+
+</CH.Code>
+
+6. After creating the cross-account role, copy its **ARN** and paste it into the Substrate Dashboard.
+7. You can optionally use the **Test Credentials** button in the Substrate Dashboard to verify that the role has been set up correctly.
+8. Click **Create** to save the credentials.
+
+### Access Key
+
+The Access Key credential type allows you to grant Substrate access to an IAM user by providing one of the user's Access Key ID and Secret Access Key combinations.
+
+For help generating these keys, check out the [AWS docs](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html).
+
+Once you have an Access Key ID and Secret Access Key:
+
+1. Navigate to [External Files](https://www.substrate.run/dashboard/external-files) in the Substrate Dashboard. Create a new Credential and select **Access Key** as the credential type.
+2. Enter a unique display name for the credential and paste in the Access Key ID and Secret Access Key.
+3. You can optionally use the **Test Credentials** button in the Substrate Dashboard to verify that the access key has been set up correctly.
+4. Click **Create** to save the credentials.
+
+## 2. Create File Store
+
+To register an S3 bucket with Substrate, navigate to [External Files](https://www.substrate.run/dashboard/external-files) in the Substrate Dashboard. Create a new Connection.
+
+Next, enter the details of the S3 bucket you want to register.
+You will need to know the name of your S3 bucket and the AWS Region it's located in.
+You can access information about your S3 buckets in the [AWS Console](https://s3.console.aws.amazon.com/s3/home).

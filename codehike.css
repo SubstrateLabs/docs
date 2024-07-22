@@ -1,0 +1,54 @@
+/*
+codehike styling example:
+  https://github.com/code-hike/not-tailwind/blob/main/styles/ch-styles.css
+ */
+
+.ch-frame-buttons {
+    display: none !important;
+}
+
+.ch-frame-title-bar {
+    border: none;
+    font-weight: medium;
+    font-family: monospace;
+}
+
+.ch-editor-tab {
+    border: none;
+}
+
+.ch-codegroup {
+    border: 1px dotted #c9c9ca;
+    box-shadow: none;
+}
+
+.ch-codeblock {
+    border: none;
+    box-shadow: none;
+}
+
+.ch-section {
+    border: none;
+}
+
+.ch-editor-frame {
+    background-color: transparent;
+}
+
+.ch-code-scroll-parent {
+    /* font-size: 16px; */
+}
+
+.ch-codeblock .ch-code-button {
+    display: none;
+}
+
+.ch-codeblock:hover .ch-code-button {
+    display: block;
+}
+
+.ch-inline-code > code {
+    padding: .2em 0.4em;
+    margin: .1em 0;
+    font-size: 0.83rem;
+}

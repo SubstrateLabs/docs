@@ -1,0 +1,46 @@
+import { Callout } from "nextra/components";
+import Link from "next/link";
+
+Use [`If`](https://substrate.run/nodes#If) to return one of two options based on a condition. This example summarizes using bullets if the input is longer than 800 characters.
+
+<CH.Code>
+
+```python Python
+from substrate import Substrate, ComputeText, If, sb
+
+idea = ComputeText(prompt="Give me a unique startup idea")
+bullets = ComputeText(
+    prompt=sb.concat("Summarize in bullets: ", idea.future.text),
+)
+full = ComputeText(
+    prompt=sb.concat("Summarize: ", idea.future.text),
+)
+summary = If(
+    condition=sb.jq(idea.future.text, "length > 800"),
+    value_if_true=bullets.future.text,
+    value_if_false=full.future.text,
+)
+```
+
+```typescript TypeScript
+import { Substrate, ComputeText, If, sb } from "substrate";
+
+const idea = new ComputeText({
+  prompt: "Give me a unique startup idea",
+});
+const bullets = new ComputeText({
+  prompt: sb.concat("Summarize in bullets: ", idea.future.text),
+});
+const full = new ComputeText({
+  prompt: sb.concat("Summarize: ", idea.future.text),
+});
+const summary = new If({
+  condition: sb.jq(idea.future.text, "length > 800"),
+  value_if_true: bullets.future.text,
+  value_if_false: full.future.text,
+});
+```
+
+</CH.Code>
+
+Similar to an `if` `else` statement, the second option is not required. If only one option is provided and the condition is not met, `If` returns a `null` result.

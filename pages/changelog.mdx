@@ -1,0 +1,50 @@
+import { Callout } from "nextra/components";
+
+<Callout emoji="֍">
+  All additions and updates to the Substrate API, in reverse-chronological
+  order.
+</Callout>
+
+Your [API and SDK version](/reference/versioning) controls the API behavior you see. Upgrade to the latest SDK version for new nodes and the latest functionality.
+
+## July 18, 2024
+
+[PyPI 220240617.1.3](https://pypi.org/project/substrate/220240617.1.3/) | [npm 120240617.1.5](https://www.npmjs.com/package/substrate/v/120240617.1.5)
+
+- Added a new node: [`SplitDocument`](https://www.substrate.run/nodes#SplitDocument). This node parses and splits up text and code documents into related chunks of text. We've found this especially useful for processing large documents before embedding them.
+- We've also introduced a handful of new options that can be specified on nodes:
+  - `cache_age` caches the result of this node for the number of seconds specified. This can speed up subsequent runs of the graph.
+  - `cache_keys` are a set of node input arguments to use when computing the cache key for `cache_age`
+  - `max_retries` specifies the number of times a node should be retried on error. This is useful for handling transient errors.
+
+## June 20, 2024
+
+- Added `If` and `Box`
+- Renamed `GenerateText` -> `ComputeText`
+- Renamed `MultiGenerateText` -> `MultiComputeText`
+- Renamed `BatchGenerateText` -> `BatchComputeText`
+- Renamed `GenerateJSON` -> `ComputeJSON`
+- Renamed `MultiGenerateJSON` -> `MultiComputeJSON`
+- Renamed `BatchGenerateJSON` -> `BatchComputeJSON`
+
+## June 12, 2024
+
+[PyPI 220240612.0.0](https://pypi.org/project/substrate/220240612.0.0/) | [npm 120240612.0.0](https://www.npmjs.com/package/substrate/v/120240612.0.0)
+
+- The TypeScript SDK now supports [streaming](https://docs.substrate.run/reference/streaming). Streaming support in the Python SDK is coming soon.
+- [_`RunPython`_](https://docs.substrate.run/reference/run-python) is generally available in the Python SDK. Use it to run your own locally-defined functions in a remote sandbox. There is no equivalent in the TypeScript SDK, but it is on our roadmap.
+- [_`BatchGenerateJSON`_](https://substrate.run/nodes#BatchGenerateJSON) has a new `model` parameter for switching between `Mistral7BInstruct` and `Llama3Instruct8B`.
+- Removed `GenerateTextVision` – call [_`GenerateText`_](https://substrate.run/nodes#GenerateText) with the optional `image_uris` parameter instead.
+- Added `system_prompt`, `frequency_penalty`, `repetition_penalty`, `presence_penalty`, and `top_p` to:
+  - `Mistral7BInstruct`
+  - `Mixtral8x7BInstruct`
+  - `Llama3Instruct8B`
+  - `Llama3Instruct70B`
+- Renamed `CreateVectorStore` to `FindOrCreateVectorStore`
+- Renamed `GenerativeEditImage` to `InpaintImage`
+- Renamed `MultiGenerativeEditImage` to `MultiInpaintImage`
+- Renamed `FillMask` to `EraseImage`
+- Renamed `TranscribeMedia` to `TranscribeSpeech`
+- Renamed the `node` parameter to `model` in:
+  - `GenerateText`, `MultiGenerateText`, `BatchGenerateText`
+  - `GenerateJSON`, `MultiGenerateJSON`, `BatchGenerateJSON`

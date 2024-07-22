@@ -1,0 +1,44 @@
+import { Callout } from "nextra/components";
+import { GenerateImage } from "@/components/nodes";
+
+<Callout emoji="֍">Opt-in to storing outputs on Substrate</Callout>
+
+Substrate is stateless by default. When using nodes that output media like <GenerateImage/>, you can opt-in to hosting their output using the _`store`_ parameter.
+
+```python
+# Returns image data
+GenerateImage(prompt="your prompt")
+
+# Returns an image URL
+GenerateImage(
+    prompt="your prompt",
+    # mark
+    store="hosted",
+)
+```
+
+<details>
+<summary>Learn more</summary>
+
+- Use _`store: "hosted"`_ to host the image on Substrate.
+- Use _`store: "s3://..."`_ to host on your own storage. See [External files](/reference/external-files) to learn more.
+
+Without the `store` parameter:
+
+- Nodes with image output return base 64-encoded JPEG data
+
+```json
+"image_uri": "data:image/jpeg;base64,/9j/4kZJRBAQYABAAD/4QYRXhpZgAA0AKAA1IBEAAAPEAAAAASg..."
+```
+
+- Nodes with audio output return base 64-encoded WAV data
+
+```json
+"audio_uri": "data:audio/wav;base64,/9j/4QSkZJRgABAQEAYAAAD/BYRXhpZgAATU0A1ABIBAAAFAAAASg..."
+```
+
+</details>
+
+<Callout emoji="" type="info">
+Substrate also comes with fast built-in [vector storage](/guides/vector-stores), which you can use to minimize data roundtrips to other providers.
+</Callout>

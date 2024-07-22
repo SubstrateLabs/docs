@@ -1,0 +1,73 @@
+import { Callout } from "nextra/components";
+import { ComputeText } from "@/components/nodes";
+import Diagram from "@/components/diagrams/mixture-of-agents";
+
+<Callout emoji="֍">Learn how to implement Mixture of Agents</Callout>
+
+Language models can perform better on tasks when given the opportunity to reflect on a proposed response. "Mixture of Agents" is a pattern (coined [by Together AI](https://www.together.ai/blog/together-moa)) in which multiple different LLMs propose responses, and subsequent LLM steps evaluate and synthesize those responses into a single improved response.
+
+<Diagram />
+
+This pattern is simple to implement with Substrate, automatically parallelized, and easy to extend.
+
+<CH.Code>
+
+```typescript TypeScript
+const substrate = new Substrate({ apiKey: SUBSTRATE_API_KEY });
+
+const prompt = "write me a summary of don quixote";
+const mist = new ComputeText({ prompt: prompt, model: "Mistral7BInstruct" });
+const llama = new ComputeText({ prompt: prompt, model: "Llama3Instruct8B" });
+const mixt = new ComputeText({ prompt: prompt, model: "Mixtral8x7BInstruct" });
+const reasoning = new ComputeText({
+  prompt: sb.interpolate`Reason about the strengths and weaknesses of each response. Explain which elements from each response are superior.
+PROMPT: ${prompt}
+CANDIDATE RESPONSES:
+1) ${mist.future.text}
+2) ${llama.future.text}
+3) ${mixt.future.text}`,
+});
+const answer = new ComputeText({
+  prompt: sb.interpolate`Come up with one detailed, comprehensive, unified response using the best parts of the candidate responses, based on the evaluation. Return only the response, do not reveal the process (do not say candidate response or evaluation).
+PROMPT: ${prompt}
+CANDIDATE RESPONSES:
+1) ${mist.future.text}
+2) ${llama.future.text}
+3) ${mixt.future.text}
+EVALUATION: ${reasoning.future.text}`,
+});
+
+const res = await substrate.run(answer);
+console.log(res.get(answer).text);
+```
+
+```python Python
+substrate = Substrate(apiKey=SUBSTRATE_API_KEY)
+
+prompt = "write me a summary of don quixote"
+mist = ComputeText(prompt=prompt, model="Mistral7BInstruct")
+llama = ComputeText(prompt=prompt, model="Llama3Instruct8B")
+mixt = ComputeText(prompt=prompt, model="Mixtral8x7BInstruct")
+reasoning = ComputeText(
+  prompt=sb.concat("Reason about the strengths and weaknesses of each response. Explain which elements from each response are superior.",
+"\nPROMPT: ", prompt,
+"\nCANDIDATE RESPONSES:",
+"\n1) ", mist.future.text,
+"\n2) ", llama.future.text,
+"\n3) ", mixt.future.text)
+)
+answer = ComputeText(
+  prompt: sb.concat("Come up with one detailed, comprehensive, unified response using the best parts of the candidate responses, based on the evaluation. Return only the response, do not reveal the process (do not say candidate response or evaluation).",
+"\nPROMPT: ", prompt,
+"\nCANDIDATE RESPONSES:",
+"\n1) ", mist.future.text,
+"\n2) ", llama.future.text,
+"\n3) ", mixt.future.text,
+"\nEVALUATION: ", reasoning.future.text)
+)
+
+res = substrate.run(answer)
+print(res.get(answer).text)
+```
+
+</CH.Code>

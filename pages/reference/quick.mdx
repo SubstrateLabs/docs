@@ -1,0 +1,143 @@
+import { ComputeText, ComputeJSON } from "@/components/nodes";
+import { Callout } from "nextra/components";
+
+<Callout emoji="֍">A concise collection of usage examples</Callout>
+
+#### Connecting text nodes
+
+<CH.Code>
+
+```typescript TypeScript
+import { Substrate, ComputeText, sb } from "substrate";
+
+// 1) Initialize Substrate
+const s = new Substrate({ apiKey: YOUR_API_KEY });
+
+// 2) Construct a graph
+const a = new ComputeText({ prompt: "tell me a story" });
+// use sb.concat to join a list of static or future strings
+const b = new ComputeText({ prompt: sb.concat("summarize: ", a.future.text) });
+const cs = [];
+[1, 2].forEach((i) => {
+  cs.push(
+    new ComputeText({
+      // or sb.interpolate to use a template string
+      prompt: sb.interpolate`summarize: ${b.future.text}`,
+    }),
+  );
+});
+
+// 3) Call run with terminal nodes
+const res = await s.run(...cs);
+
+// 4) Get the output of nodes
+console.log(res.get(b).text); // summary
+console.log(res.get(cs[0]).text); // summary of summary
+console.log(res.get(cs[1]).text); // alternate summary of summary
+```
+
+```python Python
+from substrate import Substrate, ComputeText, sb
+
+# 1) Initialize Substrate
+s = Substrate(api_key=YOUR_API_KEY)
+
+# 2) Construct a graph
+a = ComputeText(prompt="tell me a story")
+# use sb.concat to join a list of static or future strings
+b = ComputeText(prompt=sb.concat("summarize: ", a.future.text))
+cs = []
+for i in list(range(2)):
+    cs.append(ComputeText(
+        prompt=sb.concat("summarize: ", b.future.text)
+    ))
+
+# 3) Call run with terminal nodes
+res = s.run(*cs)
+
+# 4) Get the output of nodes
+print(res.get(b).text) # summary
+print(res.get(cs[0]).text) # summary of summary
+print(res.get(cs[1]).text) # alternate summary of summary
+```
+
+</CH.Code>
+
+#### Generating JSON
+
+<CH.Code>
+
+```typescript TypeScript
+import { Substrate, ComputeJSON, sb } from "substrate";
+import { z } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
+
+const bookInfo = z.object({
+  author: z.string().describe("The book's author."),
+  characters: z.array(z.string()).describe("List of main characters."),
+});
+
+const a = new ComputeJSON({
+  prompt: "Tell me the author and two main characters of Don Quixote",
+  json_schema: zodToJsonSchema(bookInfo),
+});
+const b = ComputeText({
+  prompt: sb.concat("Tell me about ", a.future.json_object.get("author")),
+});
+const c = ComputeText({
+  prompt: sb.concat(
+    "Tell me about ",
+    a.future.json_object.get("characters").at(0),
+  ),
+});
+```
+
+```python Python
+from substrate import Substrate, ComputeJSON, sb
+from pydantic import BaseModel, Field
+
+class Book(BaseModel):
+    author: str = Field(..., description="The book's title")
+    characters: list[str] = Field(..., description="List of main characters.")
+
+a = ComputeJSON(
+    prompt="Tell me the author and two main characters of Don Quixote",
+    json_schema=Book.model_json_schema(),
+)
+b = ComputeText(
+    prompt=sb.concat("Tell me about ", a.future.json_object["author"]),
+)
+c = ComputeText(
+    prompt=sb.concat("Tell me about ", a.future.json_object.characters[0]),
+)
+```
+
+</CH.Code>
+
+#### Running custom code
+
+<CH.Code>
+
+```python Python
+def markdown(url: str):
+    import requests
+    from bs4 import BeautifulSoup
+    from markdownify import markdownify
+
+    res = requests.get(url)
+    soup = BeautifulSoup(res.content, "html.parser")
+    return markdownify(str(soup))
+
+md = RunPython(
+    function=markdown,
+    kwargs={
+        "url": "https://metrograph.com/film/?vista_film_id=9999001208",
+    },
+    pip_install=["requests", "beautifulsoup4", "markdownify"],
+)
+res = substrate.run(md)
+out = res.get(md)
+print(out.output)
+```
+
+</CH.Code>

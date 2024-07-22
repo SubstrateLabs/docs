@@ -1,0 +1,132 @@
+import { Callout } from "nextra/components";
+import { TranscribeSpeech } from "@/components/nodes";
+
+<Callout emoji="֍">Learn how to transcribe audio and video</Callout>
+
+The <TranscribeSpeech/> node transcribes speech from audio or video input, with additional built-in capabilities:
+
+- segmentation by sentence
+- diarization (speaker identification)
+- alignment to word-level timestamps
+- automatic chapter detection
+
+To simply transcribe input without further processing, provide an _`audio_uri`_. This can be a publicly-hosted audio or video file, base-64-encoded audio or video data, or a privately-hosted [external file](http://localhost:3000/reference/external-files). For best results, you may also provide a _`prompt`_ that describes the content of the audio or video.
+
+<CH.Code>
+
+```python Python
+from substrate import Substrate, TranscribeSpeech
+
+# ...
+
+transcript = TranscribeSpeech(
+    audio_uri="https://media.substrate.run/dfw-clip.m4a",
+    prompt="David Foster Wallace interviewed about US culture",
+)
+res = substrate.run(transcript)
+```
+
+```typescript TypeScript
+import { Substrate, TranscribeSpeech } from "substrate";
+
+// ...
+
+const transcript = new TranscribeSpeech({
+  audio_uri: "https://media.substrate.run/dfw-clip.m4a",
+  prompt: "David Foster Wallace interviewed about US culture",
+});
+const res = await substrate.run(transcript);
+```
+
+</CH.Code>
+
+<details>
+<summary>Output</summary>
+
+```json
+{
+  "text": "language like that, the wounded inner child, the inner pain, is part of a kind of pop psychological movement in the United States that is a sort of popular Freudianism that ..."
+}
+```
+
+</details>
+
+To enable additional capabilities, set:
+
+<CH.Section>
+
+- _`segment: True`_ to return a list of sentence _`segments`_ with _`start`_ and _`end`_ timestamps.
+- _`align: True`_ to return a list of aligned _`words`_ within sentence _`segments`_.
+- _`diarize: True`_ to include _`speaker`_ IDs within _`segments`_ and _`words`_.
+- _`suggest_chapters: True`_ to return a list of suggested _`chapters`_ with titles and _`start`_ timestamps.
+
+<CH.Code>
+
+```python Python
+transcript = TranscribeSpeech(
+    audio_uri="https://media.substrate.run/dfw-clip.m4a",
+    prompt="David Foster Wallace interviewed about US culture",
+    segment=True,
+    align=True,
+    diarize=True,
+    suggest_chapters=True,
+)
+```
+
+```typescript TypeScript
+const transcript = new TranscribeSpeech({
+  audio_uri: "https://media.substrate.run/dfw-clip.m4a",
+  prompt: "David Foster Wallace interviewed about US culture",
+  segment: True,
+  diarize: True,
+  align: True,
+  suggest_chapters: True,
+});
+```
+
+</CH.Code>
+
+</CH.Section>
+
+<details>
+<summary>Output</summary>
+
+```json
+{
+  "text": "language like that, the wounded inner child, the inner pain, is part of a kind of pop psychological movement in the United States that is a sort of popular Freudianism that ...",
+  "segments": [
+    {
+      "start": 0.874,
+      "end": 15.353,
+      "speaker": "SPEAKER_00",
+      "text": "language like that, the wounded inner child, the inner pain, is part of a kind of pop psychological movement in the United States that is a sort of popular Freudianism that",
+      "words": [
+        {
+          "word": "language",
+          "start": 0.874,
+          "end": 1.275,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "like",
+          "start": 1.295,
+          "end": 1.455,
+          "speaker": "SPEAKER_00"
+        }
+      ]
+    }
+  ],
+  "chapters": [
+    {
+      "title": "Introduction to the Wounded Inner Child and Popular Psychology in US",
+      "start": 0.794
+    },
+    {
+      "title": "The Paradox of Popular Psychology and Anger in America",
+      "start": 16.186
+    }
+  ]
+}
+```
+
+</details>

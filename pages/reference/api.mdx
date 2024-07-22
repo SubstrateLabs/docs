@@ -1,0 +1,71 @@
+import { ComputeText, MultiComputeText, BatchComputeText, MultiComputeJSON, MultiGenerateImage, Llama3Instruct8B, StableDiffusionXLControlNet, UpscaleImage } from "@/components/nodes";
+import { Callout } from "nextra/components";
+
+<Callout emoji="֍">Our API design principles</Callout>
+
+The Substrate API consists of a carefully curated, well-abstracted library of components: **nodes**.
+
+## Nodes
+
+[Nodes](https://substrate.run/nodes) are designed following these principles:
+
+<Callout emoji="1">
+**High-level nodes** like <ComputeText /> provide an **accessible, general interface** for common operations.
+</Callout>
+
+- For example, `ComputeText` is for invoking a language model with text (and optional images) and receiving text.
+
+<Callout type="warning" emoji="">
+High-level nodes default to using a low-cost smaller model. As we release more capable models, we will automatically upgrade high level nodes to use the best option at equivalent cost. You can pin a specific model using the [_`model`_](https://www.substrate.run/nodes#ComputeText-model) parameter.
+</Callout>
+
+<Callout emoji="2">
+The function of each node is **focused** in order to **simplify inputs and outputs**.
+</Callout>
+
+- Most language model APIs follow the OpenAI [completions](https://platform.openai.com/docs/api-reference/completions) format, with output _`text`_ nested inside an array of _`choices`_ objects. But advanced usage patterns should never make the simple pattern more complex.
+- On Substrate, the output of <ComputeText /> is simply _`text`_.
+- To generate multiple output choices for a prompt, use <MultiComputeText />.
+- To process multiple prompts in batch with higher throughput, use <BatchComputeText />.
+- The `Multi` and `Batch` pattern is used throughout the library.
+
+<Callout emoji="3">
+**Low-level nodes** expose additional implementation-specific parameters.
+</Callout>
+
+- When there is no clear unifying abstraction, only a low-level node is provided. For example, <StableDiffusionXLControlNet /> is a specific way to generate images structured by another image.
+- When there is only one available implementation, only a high-level node is provided. For example, <UpscaleImage /> only upscales images using a tiled control net method. When we add additional upscaling methods, we'll introduce low-level nodes.
+
+<Callout type="warning" emoji="">
+If you are using a high-level node pinned to specific model, you can pass any of the pinned model's parameters through the high-level node:
+
+```python
+ComputeText(
+    prompt="tell me a story",
+    model="Llama3Instruct8B",
+    # mark
+    presence_penalty=2,
+)
+```
+
+</Callout>
+
+<Callout emoji="֍">
+We plan to introduce a higher level layer distilling common subgraph patterns, and a lower level layer that enables disaggregated inference and deeper exploration.
+</Callout>
+
+## Philosophy
+
+Unix is one of the most enduring environments for programming, in large part due to its elegant abstractions grounded in a simple modular philosophy:
+
+> - Make each program do one thing well.
+> - Expect the output of every program to become the input to another, as yet unknown, program. Don't clutter output with extraneous information.
+
+Substrate is grounded in the same modular approach, and these core beliefs:
+
+<Callout emoji="">
+
+- Enduring abstractions and infrastructure must be built with each other in mind.
+- Complexity must be progressively revealed.
+
+</Callout>

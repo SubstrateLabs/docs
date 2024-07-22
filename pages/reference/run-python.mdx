@@ -1,0 +1,73 @@
+import { Callout } from "nextra/components";
+import Link from "next/link";
+import { RunPython, ComputeText } from "@/components/nodes";
+
+<Callout emoji="֍">Run custom code using `RunPython`</Callout>
+
+Substrate has a built-in Python sandbox, which you can use to run custom Python code on Substrate. Similar functionality for the TypeScript SDK is coming soon.
+
+In the Python SDK, create a _`RunPython`_ node with:
+
+- `function` – The function to run remotely.
+- `kwargs` – Keyword arguments to your function. This can include future references to the output of previous nodes.
+
+<CH.Code>
+
+```python
+start = 1
+
+
+def add(n: int):
+    print("hello")
+    return start + n
+
+
+add1 = RunPython(
+    function=add,
+    kwargs={"n": 1},
+)
+add2 = RunPython(
+    function=add,
+    kwargs={"n": add1.future.output},
+)
+res = substrate.run(add1, add2)
+add1_out = res.get(add1)
+print(add1_out.output) # 2
+add2_out = res.get(add2)
+print(add2_out.output) # 3
+print(add2_out.stdout) # hello
+```
+
+</CH.Code>
+
+Any outputs printed to stdout are returned in the `stdout` field. If your code does not run successfully, the contents of stderr are returned in the `stderr` field.
+
+Substrate's code interpreter runs Python in a sandbox with network access. You can add packages to the sandbox by passing a list of Python dependencies to `pip_install`.
+
+<CH.Code>
+
+```python
+def markdown(url: str):
+    import requests
+    from bs4 import BeautifulSoup
+    from markdownify import markdownify
+
+    res = requests.get(url)
+    soup = BeautifulSoup(res.content, "html.parser")
+    return markdownify(str(soup))
+
+md = RunPython(
+    function=markdown,
+    kwargs={
+        "url": "https://metrograph.com/film/?vista_film_id=9999001208",
+    },
+    pip_install=["requests", "beautifulsoup4", "markdownify"],
+)
+res = substrate.run(md)
+out = res.get(md)
+print(out.output) # (markdown content of the web page)
+```
+
+</CH.Code>
+
+Here, we define a local function _`markdown`_ that retrieves the markdown content of a web page. Then, we run the function remotely on Substrate using _`RunPython`_.

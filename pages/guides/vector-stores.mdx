@@ -1,0 +1,161 @@
+import { Callout } from "nextra/components";
+import {
+FindOrCreateVectorStore,
+QueryVectorStore,
+EmbedText,
+} from "@/components/nodes";
+
+<Callout emoji="֍">Learn how to store vectors and query a vector store</Callout>
+
+Substrate comes with built-in vector storage, which you can use to store and query generated embeddings. In this example, we'll embed a set of common phrases used to enhance image generation prompts. Then, we'll query the vector store with a given prompt to recommend phrases to enhance the prompt.
+
+First, we'll create a new vector store using <FindOrCreateVectorStore/>, providing a name for the collection, and the model we'll use to embed our data.
+
+<CH.Code>
+
+```python Python
+create = FindOrCreateVectorStore(
+  collection_name="image_prompt_enhancements",
+  model="jina-v2",
+);
+create_res = substrate.run(create)
+```
+
+```typescript TypeScript
+const create = new FindOrCreateVectorStore({
+  collection_name: "image_prompt_enhancements",
+  model: "jina-v2",
+});
+const createRes = await substrate.run(create);
+```
+
+</CH.Code>
+
+Next, we'll embed the enhancement phrases using <EmbedText/> providing the text to embed, the name of the collection, and the embedding model. We'll create an array of embedding nodes, and Substrate will automatically run the nodes in parallel.
+
+<CH.Code>
+
+```python Python
+enhancements = [
+    "highly detailed",
+    "cell shaded cartoon",
+    "concept art",
+    "octane render",
+    "volumetric lighting",
+    "8k postprocessing",
+    "cinematic",
+    "sharp focus",
+]
+nodes = []
+for e in enhancements:
+    embed = EmbedText(
+        text=e,
+        collection_name="image_prompt_enhancements",
+        model="jina-v2",
+    )
+    nodes.append(embed)
+embed_res = substrate.run(*nodes)
+```
+
+```typescript TypeScript
+const enhancements = [
+  "highly detailed",
+  "cell shaded cartoon",
+  "concept art",
+  "octane render",
+  "volumetric lighting",
+  "8k postprocessing",
+  "cinematic",
+  "sharp focus",
+];
+let nodes = [];
+for (const e of enhancements) {
+  const embed = new EmbedText({
+    text: e,
+    collection_name: "image_prompt_enhancements",
+    model: "jina-v2",
+  });
+  nodes.push(embed);
+}
+const embedRes = await substrate.run(...nodes);
+```
+
+</CH.Code>
+
+Finally, we'll query the vector store with a given prompt using <QueryVectorStore/>, providing the query string, the collection name, and the embedding model.
+
+- We'll set `include_metadata` to `True` to include metadata in the response, as the metadata includes the embedded text in the `doc` field.
+- We'll set `top_k` to 3 to retrieve only the top 3 most similar results.
+
+<CH.Code>
+
+```python Python
+query = QueryVectorStore(
+    query_strings=["a towering shell the size of a city skyscraper"],
+    collection_name="image_prompt_enhancements",
+    model="jina-v2",
+    include_metadata=True,
+    top_k=3,
+)
+query_res = substrate.run(query)
+query_out = query_res.get(query)
+```
+
+```typescript TypeScript
+const query = new QueryVectorStore({
+  query_strings: ["a towering shell the size of a city skyscraper"],
+  collection_name: "image_prompt_enhancements",
+  model: "jina-v2",
+  include_metadata: True,
+  top_k: 3,
+});
+const queryRes = substrate.run(query);
+const queryOut = queryRes.get(query);
+```
+
+</CH.Code>
+
+The output of <QueryVectorStore/> has query results in the _`results`_ field, which is a _list of lists_. In this example, it contains a single list of results. If we instead provided two `query_strings`, it would contain two lists of results, one for each query string.
+
+<details>
+<summary>Output</summary>
+```json
+{
+  "results": [
+    [
+      {
+        "id": "079ee5765c8c4df98b50bdb7b5cbdd29",
+        "distance": -0.723642945289612,
+        "vector": null,
+        "metadata": {
+          "doc": "cell shaded cartoon",
+          "doc_id": "079ee5765c8c4df98b50bdb7b5cbdd29"
+        }
+      },
+      {
+        "id": "98ec8bb1da1243d88721645fc0a8899b",
+        "distance": -0.717301785945892,
+        "vector": null,
+        "metadata": {
+          "doc": "cinematic",
+          "doc_id": "98ec8bb1da1243d88721645fc0a8899b"
+        }
+      },
+      {
+        "id": "158f2fc695e648878d245fdf93fa2917",
+        "distance": -0.715586066246033,
+        "vector": null,
+        "metadata": {
+          "doc": "wide shot",
+          "doc_id": "158f2fc695e648878d245fdf93fa2917"
+        }
+      }
+    ]
+  ],
+  "collection_name": null,
+  "model": "jina-v2",
+  "metric": "inner"
+}
+```
+
+</details>

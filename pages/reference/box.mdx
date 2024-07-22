@@ -1,0 +1,41 @@
+import { Callout } from "nextra/components";
+import Link from "next/link";
+
+[`Box`](https://substrate.run/nodes#Box) combines multiple values into a single output. It accepts a dictionary as input, and simply returns the evaluated dictionary – including the result of any future references.
+
+<CH.Code>
+
+```python Python
+from substrate import Substrate, ComputeText, Box
+
+story = ComputeText(prompt="tell me a story")
+summary = ComputeText(prompt=sb.concat("summarize this: ", story.future.text))
+box = Box(
+  value={
+    "story": story.future.text,
+    "summary": summary.future.text,
+  }
+)
+res = substrate.run(box)
+```
+
+```typescript TypeScript
+import { Substrate, ComputeText, Box } from "substrate";
+
+const story = new ComputeText({ prompt: "tell me a story" });
+const summary = new ComputeText({
+  prompt: sb.concat("summarize this: ", story.future.text}),
+});
+const box = new Box({
+  value: {
+    story: story.future.text,
+    summary: summary.future.text,
+  },
+});
+
+const res = await substrate.run(box);
+```
+
+</CH.Code>
+
+This example shows how `Box` can be used to combine multiple node outputs into a single result at the end of a graph – but `Box` can also be used to combine outputs in the middle of a graph.

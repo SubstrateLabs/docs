@@ -1,0 +1,184 @@
+import { Callout, Tabs } from "nextra/components";
+import { SmallCards, SmallCard } from "@/components/SmallCards";
+import { ComputeText, Llama3Instruct8B } from "@/components/nodes";
+
+<Callout emoji="֍">Set up the Substrate SDK</Callout>
+
+## Install the SDK
+
+The official Substrate SDKs are the recommended way to interact with Substrate from TypeScript, JavaScript, or Python.
+
+<Callout emoji="">
+We plan to generate idiomatic SDKs for the Substrate protocol in every popular language. [Let us know](https://iiv4fwwtbkr.typeform.com/to/JdPN6m5W) which languages to prioritize next.
+</Callout>
+
+<Tabs items={['pip', 'poetry', 'npm', 'yarn']}>
+<Tabs.Tab>
+
+_`pip install substrate`_
+
+</Tabs.Tab>
+<Tabs.Tab>
+
+_`poetry add substrate`_
+
+</Tabs.Tab>
+<Tabs.Tab>
+
+_`npm install substrate`_
+
+</Tabs.Tab>
+<Tabs.Tab>
+
+_`yarn add substrate`_
+
+</Tabs.Tab>
+</Tabs>
+
+<SmallCards>
+  <SmallCard
+    title="substrate-python"
+    href="https://github.com/substratelabs/substrate-python"
+  />
+  <SmallCard
+    title="substrate-typescript"
+    href="https://github.com/substratelabs/substrate-typescript"
+  />
+</SmallCards>
+
+## Initialize Substrate
+
+Substrate uses API keys to authenticate requests. Create an API key in [your Substrate Dashboard](/dashboard/keys). Then, import and initialize the _`Substrate`_ client with your API key.
+
+<CH.Code>
+
+```python Python
+from substrate import Substrate, ComputeText, sb
+
+substrate = Substrate(api_key=YOUR_API_KEY)
+```
+
+```typescript TypeScript
+import { Substrate, ComputeText, sb } from "substrate";
+
+const substrate = new Substrate({ apiKey: YOUR_API_KEY });
+```
+
+</CH.Code>
+
+<Callout type="warning" emoji="⚠️">
+  Your API keys carry the ability to make requests using your Substrate account,
+  so be sure to keep them secure. Do not share your API keys in areas such as publicly-accessible client-side code, social media, or public GitHub
+  repos.
+</Callout>
+
+## Create a graph
+
+<CH.Section>
+
+Generate a story with a language model using <ComputeText />. Then, summarize the story by passing the future output of the _`story`_ to a _`summary`_ node.
+
+<CH.Code>
+
+```python Python
+story = ComputeText(prompt="tell me a story")
+summary = ComputeText(prompt=sb.concat("summarize this story in one sentence: ", story.future.text))
+```
+
+```typescript TypeScript
+const story = new ComputeText({ prompt: "tell me a story" });
+const summary = new ComputeText({
+  prompt: sb.concat("summarize this story in one sentence ", story.future.text),
+});
+```
+
+</CH.Code>
+
+</CH.Section>
+
+<Callout emoji="">
+Because _`story`_ has not been run yet, we must use _`sb.concat`_ to create a prompt using a string from its future output.
+</Callout>
+
+## Run the graph
+
+<CH.Section>
+We've created a simple graph chaining _`story`_ → _`summary`_. Run the graph by calling _`substrate.run`_.
+
+<CH.Code>
+
+```python Python
+response = substrate.run(summary);
+```
+
+```typescript TypeScript
+const response = await substrate.run(summary);
+```
+
+</CH.Code>
+</CH.Section>
+
+Substrate automatically finds the upstream dependencies for nodes.
+
+- You must pass all terminal nodes to `substrate.run`.
+- Passing upstream nodes is optional.
+- You may pass disconnected nodes (or multiple graphs) to run them in parallel.
+
+## Get the output
+
+<CH.Section>
+
+After running the graph, use _`response.get`_ to retrieve the output of any of the nodes in the graph.
+
+<CH.Code>
+
+```python Python
+summary_out = response.get(summary)
+print(summary_out.text)
+```
+
+```typescript TypeScript
+const summaryOut = response.get(summary);
+console.log(summaryOut.text);
+```
+
+</CH.Code>
+
+</CH.Section>
+
+<CH.Section>
+
+If you want to combine the outputs of multiple nodes into a single response, you can use a [`Box`](/reference/box):
+
+<CH.Code>
+
+```python Python
+# ...
+
+box = Box(
+  value={
+    "story": story.future.text,
+    "summary": summary.future.text,
+  }
+)
+res = substrate.run(box)
+```
+
+```typescript TypeScript
+// ...
+
+const box = new Box({
+  value: {
+    story: story.future.text,
+    summary: summary.future.text,
+  },
+});
+
+const res = await substrate.run(box);
+```
+
+</CH.Code>
+
+</CH.Section>
+
+You can also [stream](/reference/streaming) outputs.
