@@ -153,6 +153,8 @@ If you want to combine the outputs of multiple nodes into a single response, you
 <CH.Code>
 
 ```python Python
+from substrate import Box
+
 # ...
 
 box = Box(
@@ -165,6 +167,8 @@ res = substrate.run(box)
 ```
 
 ```typescript TypeScript
+import { Box } from "substrate";
+
 // ...
 
 const box = new Box({
@@ -173,7 +177,6 @@ const box = new Box({
     summary: summary.future.text,
   },
 });
-
 const res = await substrate.run(box);
 ```
 
