@@ -1,0 +1,82 @@
+/**
+ Notes:
+ - Suppressing the hydration warning using details with useEffect
+    - https://nextjs.org/docs/messages/react-hydration-error#solution-1-using-useeffect-to-run-on-the-client-only
+ */
+"use client";
+import Link from "next/link";
+import { useState, useEffect, useRef } from "react";
+import ReactMarkdown from "react-markdown"
+
+// https://www.robinwieruch.de/react-hook-detect-click-outside-component/
+const useOutsideClick = (callback: any) => {
+  const ref = useRef();
+  useEffect(() => {
+    const handleClick = (event: any) => {
+      // @ts-ignore
+      if (ref.current && !ref.current.contains(event.target)) {
+        callback();
+      }
+    };
+    document.addEventListener('click', handleClick);
+    return () => {
+      document.removeEventListener('click', handleClick);
+    };
+  }, [ref]);
+  return ref;
+};
+
+
+{% for d in nodes -%}
+export function {{d["name"]}}() {
+  const [isClient, setIsClient] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const ref = useOutsideClick(() => {
+    setOpen(false);
+  });
+
+  return isClient ? (
+    <details className="inline" ref={ref} open={open}>
+      <summary
+        onClick={() => {
+          setTimeout(() => {
+            setOpen(true);
+          }, 100);
+        }}
+        className="font-mono text-sm text-[#6E42BD] cursor-pointer">
+        {"{{d["name"]}}"}
+      </summary>
+      <div className="absolute max-w-sm z-50 text-xs text-black bg-white rounded drop-shadow p-1">
+        <ReactMarkdown className="text-xs p-2">
+          {"{{d["description"]}}"}
+        </ReactMarkdown>
+        <div className="flex w-full text-[14px] text-[#ABA7A6] justify-between">
+          <div className="">{"Example"}</div>
+          <Link
+            href={`https://substrate.run/nodes#{{d["name"]}}`}
+            className="text-[14px] text-[#ABA7A6] underline"
+            target="_blank"
+          >
+            {"API Reference"}
+          </Link>
+        </div>
+        <div className="whitespace-pre px-2 pb-2 pt-1 font-mono text-[13px] overflow-x-auto">
+          {% raw %}{{% endraw %}`{{d["example"]}}`{% raw %}}{% endraw %}
+        </div>
+        <div className="text-[14px] text-[#ABA7A6]">{"Output"}</div>
+        <div className="whitespace-pre px-2 pb-2 pt-1 font-mono text-[13px] overflow-x-auto">
+          {% raw %}{{% endraw %}`{{d["output"]}}`{% raw %}}{% endraw %}
+        </div>
+      </div>
+    </details>
+  ) : (
+    <>{"{{d["name"]}}"}</>
+  );
+}
+
+{% endfor %}
