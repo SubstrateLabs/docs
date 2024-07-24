@@ -57,7 +57,7 @@ reasoning = ComputeText(
 "\n3) ", mixt.future.text)
 )
 answer = ComputeText(
-  prompt: sb.concat("Come up with one detailed, comprehensive, unified response using the best parts of the candidate responses, based on the evaluation. Return only the response, do not reveal the process (do not say candidate response or evaluation).",
+  prompt=sb.concat("Come up with one detailed, comprehensive, unified response using the best parts of the candidate responses, based on the evaluation. Return only the response, do not reveal the process (do not say candidate response or evaluation).",
 "\nPROMPT: ", prompt,
 "\nCANDIDATE RESPONSES:",
 "\n1) ", mist.future.text,
