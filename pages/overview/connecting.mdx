@@ -3,11 +3,13 @@ import { MultiComputeText, ComputeJSON } from "@/components/nodes";
 
 <Callout emoji="֍">Learn how to connect nodes using futures</Callout>
 
-Substrate requires connecting nodes before running them. When we connect two nodes, we use a **future** reference from the first node as an input to the second node.
+To use Substrate, you connect nodes using **future references**, and then run the nodes.
 
-Operators from the `sb` submodule are used to transform future values. Common transforms are included, and most other transforms can be expressed using [jq](https://jqlang.github.io/jq/), a powerful language for manipulating JSON data.
+To connect two nodes, we use a **future** reference from the first node as an input to the second node. Often, we'll need to **transform** future references (for example, to use the output of a node as part of a subsequent prompt).
 
-### See also
+For most transformations, you can use Substrate's built-in **`sb` functions**, which we'll cover here.
+
+#### See also
 
 - Use [`Box`](/reference/box) to combine outputs into a single node
 - Use [`If`](/reference/if) to return one of two options based on a condition
@@ -15,9 +17,7 @@ Operators from the `sb` submodule are used to transform future values. Common tr
 
 ### Joining strings
 
-<CH.Section>
-
-Use `sb.concat` to join future and static strings.
+Use `sb.concat` to join a list of future and static strings.
 
 <CH.Code>
 
@@ -37,10 +37,7 @@ const summary = new ComputeText({
 
 </CH.Code>
 
-</CH.Section>
-<CH.Section>
-
-To join strings using a template, use `sb.interpolate` in TypeScript.
+In TypeScript, you can use `sb.interpolate`:
 
 <CH.Code>
 
@@ -54,11 +51,29 @@ const summary = new ComputeText({
 
 </CH.Code>
 
-</CH.Section>
+In Python, you can use `sb.format`, or `sb.jinja`. Jinja is a powerful tool for building prompt templates, with support for [filters](https://jinja.palletsprojects.com/en/3.1.x/templates/#filters), [conditionals](https://jinja.palletsprojects.com/en/3.1.x/templates/#tests), and [comments](https://jinja.palletsprojects.com/en/3.1.x/templates/#comments).
+
+<CH.Code>
+
+```python sb.format
+story = ComputeText(prompt="tell me a short story")
+summary = ComputeText(
+    # mark
+    prompt=sb.format(f"summarize: {story}", story=story.future.text),
+)
+```
+
+```python sb.jinja
+story = ComputeText(prompt="tell me a short story")
+summary = ComputeText(
+    # mark
+    prompt=sb.jinja("summarize: {{story}}", story=story.future.text),
+)
+```
+
+</CH.Code>
 
 ### Future dictionary values
-
-<CH.Section>
 
 - In Python, simply use brackets as usual.
 - In TypeScript, use _`.get()`_ to reference untyped future object values.
@@ -111,11 +126,7 @@ const summary = new ComputeText({
 
 </CH.Code>
 
-</CH.Section>
-
 ### Future array items
-
-<CH.Section>
 
 - In Python, simply use brackets as usual.
 - In TypeScript, use _`.at()`_ to index future arrays.
@@ -131,10 +142,7 @@ summary = ComputeText(
 ```
 
 ```typescript TypeScript
-const story = new MultiComputeText({
-  prompt: "tell me a short story",
-  num_choices: 2,
-});
+const story = new MultiComputeText({ prompt: "tell me a short story", num_choices: 2 });
 const summary = new ComputeText({
   // mark
   prompt: sb.concat("summarize: ", story.future.choices.at(0).text),
@@ -143,11 +151,7 @@ const summary = new ComputeText({
 
 </CH.Code>
 
-</CH.Section>
-
 ### Parsing strings
-
-<CH.Section>
 
 Use `sb.jq` to parse strings before passing them to other nodes.
 
@@ -176,10 +180,7 @@ const name = new ComputeText({
 const haiku = new ComputeText({
   prompt: sb.concat(
     "Write a haiku describing a startup named: ",
-    sb.jq(
-      name.future.text,
-      'ascii_downcase | split("<name>") | .[1] | split("</name>") | .[0]',
-    ),
+    sb.jq(name.future.text, 'ascii_downcase | split("<name>") | .[1] | split("</name>") | .[0]'),
   ),
 });
 ```
@@ -201,6 +202,5 @@ In this `jq` example, we're [downcasing](https://jqlang.github.io/jq/manual/#asc
 Alternatively, you can use `jq`'s [capture](https://jqlang.github.io/jq/manual/#capture) function with a regular expression:
 
 - `capture("<name>(?<content>.*?)</name>") | .content`
-</details>
 
-</CH.Section>
+</details>

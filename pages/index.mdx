@@ -2,22 +2,16 @@ import { SmallCards, SmallCard } from "../components/SmallCards";
 import { Callout, Tabs } from "nextra/components";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  ComputeText,
-  ComputeJSON,
-  GenerateImage,
-  GenerateSpeech,
-  UpscaleImage,
-} from "@/components/nodes";
+import { ComputeText, ComputeJSON, GenerateImage, GenerateSpeech, UpscaleImage } from "@/components/nodes";
 import { FirstGraph } from "@/components/diagrams/FirstGraph";
 
-Substrate is a **powerful SDK** for building with AI models, with [batteries included](https://substrate.run/nodes): language models, image generation, built-in vector storage, sandboxed code execution, and more.
+Substrate is a **powerful SDK** for building with AI, with [batteries included](https://substrate.run/nodes): language models, image generation, built-in vector storage, sandboxed code execution, and more. To use Substrate, you simply connect tasks, and then run the workflow. With this simple approach, we can create AI systems (from RAG, to agents, to multi-modal generative experiences) by simply describing the computation, with **zero additional abstractions**.
 
-Substrate is also an **inference engine optimized for running compound AI workloads**. Wiring together multiple inference APIs is inherently slow – whether you do it yourself, or use a framework like LangChain. Substrate lets you ditch the framework, write less code, and run compound AI fast. Learn more: [Why Substrate?](/why)
+Substrate is also a **workflow execution** and **inference** engine, optimized for running compound AI workloads. Wiring together multiple inference APIs is inherently slow – whether you do it yourself, or use a framework like LangChain. Substrate lets you ditch the framework, write less code, and run compound AI fast. Learn more: [Why Substrate?](/why)
 
 ### Mini examples
 
-Substrate is the **simplest** way to write multi-step AI programs. Each example below is hosted in a runnable code environment, so you can get a feel for Substrate without opening your editor.
+Each example below is hosted in a runnable code environment, so you can get a feel for Substrate without opening your editor.
 
 <Tabs items={['Wrangle structured data', 'Image generation', 'Hacker News research', 'Spanish lesson']}>
 <Tabs.Tab>

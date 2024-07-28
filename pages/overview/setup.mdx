@@ -9,7 +9,8 @@ import { ComputeText, Llama3Instruct8B } from "@/components/nodes";
 The official Substrate SDKs are the recommended way to interact with Substrate from TypeScript, JavaScript, or Python.
 
 <Callout emoji="">
-We plan to generate idiomatic SDKs for the Substrate protocol in every popular language. [Let us know](https://iiv4fwwtbkr.typeform.com/to/JdPN6m5W) which languages to prioritize next.
+  We plan to generate idiomatic SDKs for the Substrate protocol in every popular language. [Let us
+  know](https://iiv4fwwtbkr.typeform.com/to/JdPN6m5W) which languages to prioritize next.
 </Callout>
 
 <Tabs items={['pip', 'poetry', 'npm', 'yarn']}>
@@ -36,14 +37,8 @@ _`yarn add substrate`_
 </Tabs>
 
 <SmallCards>
-  <SmallCard
-    title="substrate-python"
-    href="https://github.com/substratelabs/substrate-python"
-  />
-  <SmallCard
-    title="substrate-typescript"
-    href="https://github.com/substratelabs/substrate-typescript"
-  />
+  <SmallCard title="substrate-python" href="https://github.com/substratelabs/substrate-python" />
+  <SmallCard title="substrate-typescript" href="https://github.com/substratelabs/substrate-typescript" />
 </SmallCards>
 
 ## Initialize Substrate
@@ -67,12 +62,15 @@ const substrate = new Substrate({ apiKey: YOUR_API_KEY });
 </CH.Code>
 
 <Callout type="warning" emoji="⚠️">
-  Your API keys carry the ability to make requests using your Substrate account,
-  so be sure to keep them secure. Do not share your API keys in areas such as publicly-accessible client-side code, social media, or public GitHub
-  repos.
+  Your API keys carry the ability to make requests using your Substrate account, so be sure to keep them secure. Do not
+  share your API keys in areas such as publicly-accessible client-side code, social media, or public GitHub repos.
 </Callout>
 
-## Create a graph
+## Connect tasks
+
+Substrate lets you connect tasks **before** running them. Substrate comes with a large [library](https://substrate.run/nodes) of built-in tasks, called **nodes**. It's easy to run individual nodes, or connect multiple nodes into chains or branching workflows.
+
+<br />
 
 <CH.Section>
 
@@ -82,13 +80,15 @@ Generate a story with a language model using <ComputeText />. Then, summarize th
 
 ```python Python
 story = ComputeText(prompt="tell me a story")
-summary = ComputeText(prompt=sb.concat("summarize this story in one sentence: ", story.future.text))
+summary = ComputeText(
+    prompt=sb.format(f"summarize this story in one sentence: {story}", story=story.future.text),
+)
 ```
 
 ```typescript TypeScript
 const story = new ComputeText({ prompt: "tell me a story" });
 const summary = new ComputeText({
-  prompt: sb.concat("summarize this story in one sentence ", story.future.text),
+  prompt: sb.interpolate`summarize this story in one sentence: ${story.future.text}`),
 });
 ```
 
@@ -97,13 +97,16 @@ const summary = new ComputeText({
 </CH.Section>
 
 <Callout emoji="">
-Because _`story`_ has not been run yet, we must use _`sb.concat`_ to create a prompt using a string from its future output.
+  We use _`sb`_ functions to transform the future output of story (`story.future.text`). Learn more in [Connect
+  nodes](/connecting).
 </Callout>
 
 ## Run the graph
 
+<br />
+
 <CH.Section>
-We've created a simple graph chaining _`story`_ → _`summary`_. Run the graph by calling _`substrate.run`_.
+We've created a simple two-node graph chaining _`story`_ → _`summary`_. Run the graph by calling _`substrate.run`_.
 
 <CH.Code>
 
