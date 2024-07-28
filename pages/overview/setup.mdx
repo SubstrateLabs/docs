@@ -88,7 +88,7 @@ summary = ComputeText(
 ```typescript TypeScript
 const story = new ComputeText({ prompt: "tell me a story" });
 const summary = new ComputeText({
-  prompt: sb.interpolate`summarize this story in one sentence: ${story.future.text}`),
+  prompt: sb.interpolate`summarize this story in one sentence: ${story.future.text}`,
 });
 ```
 

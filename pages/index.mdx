@@ -11,9 +11,25 @@ Substrate is also a **workflow execution** and **inference** engine, optimized f
 
 ### Mini examples
 
-Each example below is hosted in a runnable code environment, so you can get a feel for Substrate without opening your editor.
+Each example below is hosted in a runnable code environment, so you can get a feel for Substrate without opening your editor. (Substrate supports JavaScript, TypeScript, and Python, with more languages on the way).
 
-<Tabs items={['Wrangle structured data', 'Image generation', 'Hacker News research', 'Spanish lesson']}>
+<Tabs items={['Summarize text', 'Wrangle structured data', 'Image generation', 'Hacker News research', 'Spanish lesson']}>
+<Tabs.Tab>
+
+Generate a story, summarize it, and stream the results as they complete.
+
+You can run this code (hit "Preview") or [view on val.town](https://www.val.town/v/substrate/intro)
+
+<iframe
+  width="100%"
+  height="500px"
+  src="https://www.val.town/embed/substrate/intro"
+  title="Generate and summarize a story"
+  allow="web-share"
+  allowFullScreen
+></iframe>
+
+</Tabs.Tab>
 <Tabs.Tab>
 
 Take a JSON object and transform it into the target schema. <ComputeJSON /> produces 100% guaranteed JSON output. (Unreliable JSON generation is a common pain point with other providers.)
