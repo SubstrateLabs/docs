@@ -68,13 +68,13 @@ const substrate = new Substrate({ apiKey: YOUR_API_KEY });
 
 ## Connect tasks
 
-Substrate lets you connect tasks **before** running them. Substrate comes with a large [library](https://substrate.run/nodes) of built-in tasks, called **nodes**. It's easy to run individual nodes, or connect multiple nodes into chains or branching workflows.
+When using Substrate, you can connect multiple tasks (called **nodes**) and then run the entire workload (a **graph**). Substrate comes with a large [library of built-in nodes](https://substrate.run/nodes). It's easy to run individual nodes, or connect multiple nodes into chains or branching workflows.
 
 <br />
 
 <CH.Section>
 
-Generate a story with a language model using <ComputeText />. Then, summarize the story by passing the future output of the _`story`_ to a _`summary`_ node.
+In this starter example, we generate a story with a language model using <ComputeText />. Then, we summarize the story by passing the future output of the _`story`_ to a _`summary`_ node.
 
 <CH.Code>
 
@@ -97,8 +97,7 @@ const summary = new ComputeText({
 </CH.Section>
 
 <Callout emoji="">
-  We use _`sb`_ functions to transform the future output of story (`story.future.text`). Learn more in [Connect
-  nodes](/connecting).
+  We use [**_`sb`_ functions**](/overview/connecting) to transform the future output of story (`story.future.text`)
 </Callout>
 
 ## Run the graph
@@ -128,6 +127,8 @@ Substrate automatically finds the upstream dependencies for nodes.
 - You may pass disconnected nodes (or multiple graphs) to run them in parallel.
 
 ## Get the output
+
+<br />
 
 <CH.Section>
 
