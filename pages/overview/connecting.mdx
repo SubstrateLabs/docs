@@ -55,7 +55,7 @@ In Python, you can use `sb.format`, or `sb.jinja`. Jinja is a powerful tool for 
 story = ComputeText(prompt="tell me a short story")
 summary = ComputeText(
     # mark
-    prompt=sb.format(f"summarize: {story}", story=story.future.text),
+    prompt=sb.format("summarize: {story}", story=story.future.text),
 )
 ```
 
