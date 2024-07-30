@@ -81,7 +81,7 @@ In this starter example, we generate a story with a language model using <Comput
 ```python Python
 story = ComputeText(prompt="tell me a story")
 summary = ComputeText(
-    prompt=sb.format(f"summarize this story in one sentence: {story}", story=story.future.text),
+    prompt=sb.format("summarize this story in one sentence: {story}", story=story.future.text),
 )
 ```
 
