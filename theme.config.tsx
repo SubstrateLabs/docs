@@ -44,6 +44,24 @@ const config: DocsThemeConfig = {
   editLink: {
     text: EditLink,
   },
+  head: () => {
+    const { asPath } = useRouter();
+    const { frontMatter } = useConfig();
+    const url = "https://docs.substrate.run" + asPath;
+
+    return (
+      <>
+        <meta property="og:url" content={url} />
+        <meta property="og:title" content={frontMatter.title || "Substrate"} />
+        <meta
+          property="og:description"
+          content={frontMatter.description || "Substrate Docs"}
+        />
+        <meta name="twitter:card" content="og_image_v3" />
+        <meta name="twitter:site" content="@SubstrateLabs" />
+      </>
+    );
+  },
 };
 
 export default config;
