@@ -1,0 +1,176 @@
+import { Callout } from "nextra/components";
+import { ComputeText, ComputeJSON } from "@/components/nodes";
+import Diagram from "@/components/diagrams/extract-and-summarize";
+
+<Callout emoji="֍">Learn how to generate structured JSON output using ComputeJSON</Callout>
+
+Generating JSON with LLMs is a useful technique that is broadly applicable to many tasks – from data extraction, to data wrangling, to function calling. You'll find that it's also very useful in the context of chained workflows.
+
+In this guide, we'll show you how to generate JSON using <ComputeJSON/>. Substrate uses robust structured generation techniques at inference time – which means valid JSON output is guaranteed, and fast.
+
+### Define a schema
+
+First, we define a schema (and convert it to [JSON schema](https://json-schema.org/understanding-json-schema/about) format).
+
+- In TypeScript, we recommend using [zod](https://zod.dev/) and the [zod-to-json-schema](https://www.npmjs.com/package/zod-to-json-schema) package.
+- In Python, we recommend using [Pydantic](https://docs.pydantic.dev/latest/) and the `model_json_schema()` method.
+
+<CH.Code>
+
+```typescript TypeScript
+import { z } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
+
+const bookInfo = z.object({
+  author: z.string().describe("The book's author."),
+  characters: z.array(z.string()).describe("List of main characters."),
+});
+
+const jsonSchema = zodToJsonSchema(bookInfo);
+```
+
+```python Python
+from pydantic import BaseModel, Field
+
+class Book(BaseModel):
+    author: str = Field(..., description="The book's title")
+    characters: list[str] = Field(..., description="List of main characters.")
+
+json_schema = Book.model_json_schema()
+```
+
+</CH.Code>
+
+### Generate JSON
+
+To generate JSON, pass a JSON schema to `ComputeJSON` along with a prompt.
+
+To access the output of <ComputeJSON /> in subsequent nodes, use `future.json_object`.
+
+<CH.Code>
+
+```typescript TypeScript
+import { Substrate, ComputeJSON, sb } from "substrate";
+
+// ...
+
+const a = new ComputeJSON({
+  prompt: "Tell me the author and two main characters of Don Quixote",
+  json_schema: jsonSchema,
+});
+const b = ComputeText({
+  prompt: sb.concat("Tell me about ", a.future.json_object.get("author")),
+});
+const c = ComputeText({
+  prompt: sb.concat("Tell me about ", a.future.json_object.get("characters").at(0)),
+});
+```
+
+```python Python
+from substrate import Substrate, ComputeJSON, sb
+
+# ...
+
+a = ComputeJSON(
+    prompt="Tell me the author and two main characters of Don Quixote",
+    json_schema=json_schema,
+)
+b = ComputeText(
+    prompt=sb.concat("Tell me about ", a.future.json_object["author"]),
+)
+c = ComputeText(
+    prompt=sb.concat("Tell me about ", a.future.json_object.characters[0]),
+)
+```
+
+</CH.Code>
+
+### Use case: Data wrangling
+
+JSON generation can be used to extract structured data from unstructured sources, or transform data from one shape to another. In the following example, we use `ComputeJSON` to transform a JSON object to a semantically equivalent object in a different shape.
+
+<CH.Code>
+
+```typescript TypeScript
+import { ComputeJSON, ComputeText, sb, Substrate } from "npm:substrate";
+import { z } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
+
+const original = {
+  personalInfo: {
+    name: "John Doe",
+    age: 30,
+  },
+  occupation: "Software Engineer",
+  fullAddress: "123 Main St, Anytown",
+  address: {
+    street: "123 Main St",
+    city: "Anytown",
+  },
+};
+
+const substrate = new Substrate({ apiKey: "YOUR_API_KEY" });
+
+const TargetSchema = z.object({
+  fullName: z.string(),
+  yearsOld: z.number().int().nonnegative(),
+  profession: z.string(),
+  location: z.object({
+    streetAddress: z.string(),
+    cityName: z.string(),
+  }),
+});
+
+const json = new ComputeJSON({
+  prompt: `Translate the following JSON object to the target schema.
+  ${JSON.stringify(original)}`,
+  json_schema: zodToJsonSchema(TargetSchema),
+});
+
+const res = await substrate.run(json);
+```
+
+```python Python
+import json
+from substrate import Substrate, ComputeJSON, sb
+
+original = {
+    "personalInfo": {
+        "name": "John Doe",
+        "age": 30,
+    },
+    "occupation": "Software Engineer",
+    "fullAddress": "123 Main St, Anytown",
+    "address": {
+        "street": "123 Main St",
+        "city": "Anytown",
+    },
+}
+
+substrate = Substrate(api_key="YOUR_API_KEY")
+# using a JSON schema directly is less verbose than Pydantic for nested schemas
+target_schema = {
+    "type": "object",
+    "properties": {
+        "fullName": {"type": "string"},
+        "yearsOld": {"type": "integer", "minimum": 0},
+        "profession": {"type": "string"},
+        "location": {
+            "type": "object",
+            "properties": {
+                "streetAddress": {"type": "string"},
+                "cityName": {"type": "string"}
+            },
+            "required": ["streetAddress", "cityName"]
+        }
+    },
+    "required": ["fullName", "yearsOld", "profession", "location"]
+}
+json_node = ComputeJSON(
+    prompt=f"Translate the following JSON object to the target schema.\n{json.dumps(original)}",
+    json_schema=target_schema
+)
+res = substrate.run(json_node)
+```
+
+</CH.Code>

@@ -1,4 +1,5 @@
 {
+  "generate-json": "Generate JSON",
   "extract-and-summarize": "Extract and summarize Hacker News comments",
   "reimagine-a-room": "Reimagine a room",
   "transcription": "Transcribe audio & video",

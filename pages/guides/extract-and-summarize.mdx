@@ -3,24 +3,12 @@ import { ComputeText, ComputeJSON } from "@/components/nodes";
 import Diagram from "@/components/diagrams/extract-and-summarize";
 
 <Callout emoji="֍">
-  Learn how to extract information (including sentiment analysis) and generate a
-  summary (RAG)
+  Learn how to extract information (including sentiment analysis) and generate a summary (RAG)
 </Callout>
 
 In this guide, we'll show you how to search Hacker News comments for a topic, extract sentiment, and generate a research summary using Substrate.
 
-This concise RAG implementation runs dozens of LLM calls in parallel and streams the markdown result. It's easy to remix the runnable TypeScript code below, [hosted on val.town](https://www.val.town/v/substrate/hackerNewsRAG).
-
-<br />
-
-<iframe
-  width="100%"
-  height="600px"
-  src="https://www.val.town/embed/substrate/hackerNewsRAG"
-  title="Val Town"
-  frameborder="0"
-  allow="web-share"
-></iframe>
+This concise RAG implementation runs dozens of LLM calls in parallel and streams the markdown result.
 
 First, we search HackerNews comments using the [Algolia HN Search API](https://hn.algolia.com/api).
 
@@ -34,9 +22,17 @@ const searchResults = await hnSearch({
 });
 ```
 
+```python Python
+# https://github.com/santiagobasulto/python-hacker-news
+# pip install python-hn
+from hn import search_by_date
+
+search_by_date(query, comments=True, created_at__lt='2024-01-01')
+```
+
 </CH.Code>
 
-Next, we use ComputeJSON to extract summary, sentiment, and other metadata from each comment. In TypeScript, we use [zod](https://zod.dev/) and [zod-to-json-schema](https://www.npmjs.com/package/zod-to-json-schema) to create the JSON schema. In Python, we use [Pydantic](https://docs.pydantic.dev/latest/).
+Next, we use <ComputeJSON/> to extract summary, sentiment, and other metadata from each comment. In TypeScript, we use [zod](https://zod.dev/) and [zod-to-json-schema](https://www.npmjs.com/package/zod-to-json-schema) to create the JSON schema. In Python, we use [Pydantic](https://docs.pydantic.dev/latest/).
 
 <CH.Code>
 
@@ -53,9 +49,7 @@ const commentInfo = z.object({
     .describe(
       "True if the story is a Ask HN post with Who is hiring, Who wants to be hired, or Seeking freelancer in the title",
     ),
-  sentiment: z
-    .enum(["positive", "neutral", "negative"])
-    .describe("Sentiment of the post."),
+  sentiment: z.enum(["positive", "neutral", "negative"]).describe("Sentiment of the post."),
   objectID: z.string().describe("objectID field"),
 });
 

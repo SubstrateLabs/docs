@@ -1,7 +1,6 @@
 import "../styles.css";
 import "@code-hike/mdx/dist/index.css";
 import "../codehike.css";
-import MarketingFooter from "../components/MarketingFooter";
 import Head from "next/head";
 import { cn } from "@/components/lib/utils";
 import { AtkinsonHyperlegible } from "@/fonts";
@@ -25,7 +24,6 @@ return (<main>
   <div className={
     cn("w-full h-full")}>
     <Component {...pageProps} />
-    <MarketingFooter />
   </div>
   <style jsx global>{` html { font-family: ${AtkinsonHyperlegible.style.fontFamily}; } `}</style>
   </main>);
