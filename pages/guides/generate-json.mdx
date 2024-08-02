@@ -2,13 +2,13 @@ import { Callout } from "nextra/components";
 import { ComputeText, ComputeJSON } from "@/components/nodes";
 import Diagram from "@/components/diagrams/extract-and-summarize";
 
-<Callout emoji="֍">Learn how to generate structured JSON output using ComputeJSON</Callout>
+<Callout emoji="֍">
+  Learn how to generate structured JSON output using <ComputeJSON />
+</Callout>
 
-Generating JSON with LLMs is a useful technique that is broadly applicable to many tasks – from data extraction, to data wrangling, to function calling. You'll find that it's also very useful in the context of chained workflows.
+Generating JSON with LLMs is a useful technique that is broadly applicable to many tasks – from data extraction, to data wrangling, to function calling. You'll find that it's also very useful in the context of chained workflows. We believe JSON generation is a core primitive for AI engineering, so we've optimized the heck out of it – learn more on [our blog](https://substrate.run/blog/json-generation).
 
-In this guide, we'll show you how to generate JSON using <ComputeJSON/>. Substrate uses robust structured generation techniques at inference time – which means valid JSON output is guaranteed, and fast.
-
-### Define a schema
+### 1. Define a schema
 
 First, we define a schema (and convert it to [JSON schema](https://json-schema.org/understanding-json-schema/about) format).
 
@@ -41,7 +41,7 @@ json_schema = Book.model_json_schema()
 
 </CH.Code>
 
-### Generate JSON
+### 2. Generate JSON
 
 To generate JSON, pass a JSON schema to `ComputeJSON` along with a prompt.
 

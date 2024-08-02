@@ -2,9 +2,12 @@ import { Callout } from "nextra/components";
 import { ComputeText, ComputeJSON } from "@/components/nodes";
 import Diagram from "@/components/diagrams/extract-and-summarize";
 
-<Callout emoji="֍">
-  Learn how to extract information (including sentiment analysis) and generate a summary (RAG)
-</Callout>
+<Callout emoji="֍">Learn how to extract information from Hacker News comments and generate a summary</Callout>
+
+RAG, or "Retrieval Augmented Generation", is a popular technique for enhancing the output of language models. RAG consists of two parts:
+
+- "R" (Retrieval) – search for relevant context. Substrate comes with a built-in [vector store](/guides/vector-stores) that's performant and cost effective.
+- "AG" (Augmented Generation) – enrich a prompt with search results to "augment" the output.
 
 In this guide, we'll show you how to search Hacker News comments for a topic, extract sentiment, and generate a research summary using Substrate.
 

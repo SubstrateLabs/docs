@@ -1,9 +1,10 @@
 {
   "generate-json": "Generate JSON",
-  "extract-and-summarize": "Extract and summarize Hacker News comments",
+  "run-python-code": "Run Python code",
+  "rag-intro": "RAG: Summarize Hacker News comments",
+  "vector-stores": "Store & query vectors",
   "reimagine-a-room": "Reimagine a room",
   "transcription": "Transcribe audio & video",
-  "vector-stores": "Store & query vectors",
   "remove-background": "Separate foreground & background",
   "masked-image-generation": "Masked image generation",
   "mixture-of-agents": "Mixture of Agents"

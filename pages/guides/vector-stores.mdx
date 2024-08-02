@@ -1,15 +1,21 @@
 import { Callout } from "nextra/components";
-import {
-FindOrCreateVectorStore,
-QueryVectorStore,
-EmbedText,
-} from "@/components/nodes";
+import { FindOrCreateVectorStore, QueryVectorStore, EmbedText } from "@/components/nodes";
 
 <Callout emoji="֍">Learn how to store vectors and query a vector store</Callout>
 
-Substrate comes with built-in vector storage, which you can use to store and query generated embeddings. In this example, we'll embed a set of common phrases used to enhance image generation prompts. Then, we'll query the vector store with a given prompt to recommend phrases to enhance the prompt.
+Substrate comes with built-in vector storage, which you can use to store and query generated embeddings. It's performant, colocated with the rest of your workload, and much more cost-effective than alternative vector database providers, like Pinecone, Supabase, or Weaviate.
 
-First, we'll create a new vector store using <FindOrCreateVectorStore/>, providing a name for the collection, and the model we'll use to embed our data.
+This guide embeds a set of common phrases used to enhance image generation prompts – and then queries the vector store, recommending phrases to enhance a given prompt.
+
+To create a new vector store, use <FindOrCreateVectorStore/>. Give your store a `collection_name`, and specify the embedding model.
+
+<details>
+<summary>Learn more: embedding models</summary>
+
+- `jina-v2` is a popular model for embedding _text_.
+- `clip` is a popular model for embedding _text and images_.
+
+</details>
 
 <CH.Code>
 
@@ -31,19 +37,14 @@ const createRes = await substrate.run(create);
 
 </CH.Code>
 
-Next, we'll embed the enhancement phrases using <EmbedText/> providing the text to embed, the name of the collection, and the embedding model. We'll create an array of embedding nodes, and Substrate will automatically run the nodes in parallel.
+To embed data, use <EmbedText/>. Provide the data to embed, the `collection_name`, and the embedding `model`. Below, we create an array of embedding nodes – Substrate automatically runs these nodes in parallel because they have no upstream dependencies.
 
 <CH.Code>
 
 ```python Python
 enhancements = [
     "highly detailed",
-    "cell shaded cartoon",
-    "concept art",
-    "octane render",
-    "volumetric lighting",
-    "8k postprocessing",
-    "cinematic",
+    # ...
     "sharp focus",
 ]
 nodes = []
@@ -60,12 +61,7 @@ embed_res = substrate.run(*nodes)
 ```typescript TypeScript
 const enhancements = [
   "highly detailed",
-  "cell shaded cartoon",
-  "concept art",
-  "octane render",
-  "volumetric lighting",
-  "8k postprocessing",
-  "cinematic",
+  // ...
   "sharp focus",
 ];
 let nodes = [];
@@ -82,10 +78,17 @@ const embedRes = await substrate.run(...nodes);
 
 </CH.Code>
 
-Finally, we'll query the vector store with a given prompt using <QueryVectorStore/>, providing the query string, the collection name, and the embedding model.
+To query a vector store, use <QueryVectorStore/>. Provide the query string, `collection_name`, and embedding `model`.
 
-- We'll set `include_metadata` to `True` to include metadata in the response, as the metadata includes the embedded text in the `doc` field.
-- We'll set `top_k` to 3 to retrieve only the top 3 most similar results.
+<details>
+<summary>Learn more: QueryVectorStore parameters</summary>
+
+- Set `include_metadata` to `True` to include metadata in the response. The metadata includes the embedded text in the `doc` field.
+- Set `top_k` to 3 to retrieve only the top 3 most similar results.
+- To query images using a multimodal embedding model like `clip`, provide `query_image_uris`.
+- Multiple queries can be run in a batch – simply pass multiple query strings or images.
+
+</details>
 
 <CH.Code>
 
