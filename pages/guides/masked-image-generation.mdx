@@ -2,18 +2,32 @@ import { Callout } from "nextra/components";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
-import {
-RemoveBackground,
-StableDiffusionXLControlNet,
-StableDiffusionXLInpaint,
-} from "@/components/nodes";
+import { RemoveBackground, StableDiffusionXLControlNet, StableDiffusionXLInpaint } from "@/components/nodes";
 
-<Callout emoji="֍">Use a mask to generate images</Callout>
+<Callout emoji="֍">
+  Learn how to use masked image generation techniques using <StableDiffusionXLControlNet /> and{" "}
+  <StableDiffusionXLInpaint />.
+</Callout>
 
-In this example, we'll generate a mask from a logo image with <RemoveBackground/>, and use that mask to generate variations of the image using two workflows:
+<div className="grid grid-cols-1 lg:grid-cols-2 mt-4 w-full">
+  <Card>
+    <CardContent className="flex justify-center pt-1 pb-0">
+      <Image src="https://media.substrate.run/logo-atlantis-1.jpg" width={300} height={300} alt="image" />
+    </CardContent>
+    <CardFooter className="flex justify-center">Generate illusions</CardFooter>
+  </Card>
+  <Card>
+    <CardContent className="flex justify-center pt-1 pb-0">
+      <Image src="https://media.substrate.run/ex-cn-inpaint.webp" width={300} height={300} alt="no background" />
+    </CardContent>
+    <CardFooter className="flex justify-center">Edge variation and inpainting</CardFooter>
+  </Card>
+</div>
 
-1. Using <StableDiffusionXLControlNet /> with the `illusion` method to generate illusions incorporating the mask.
-2. Using <StableDiffusionXLControlNet /> with the `edge` method followed by <StableDiffusionXLInpaint /> to fill a mask with content and then generate inside the mask.
+We'll cover two workflows that use masked image generation:
+
+1. **Generate illusions**: <StableDiffusionXLControlNet /> with the `illusion` method generates illusions incorporating the mask.
+2. **Edge variation and inpainting**: <StableDiffusionXLControlNet /> with the `edge` method generates variations of an image using edge detection, and <StableDiffusionXLInpaint /> generates inside the mask.
 
 First, initialize Substrate:
 
@@ -32,12 +46,7 @@ s = Substrate(api_key=YOUR_API_KEY)
 ```
 
 ```typescript TypeScript
-import {
-  Substrate,
-  RemoveBackground,
-  StableDiffusionXLControlNet,
-  StableDiffusionXLInpaint,
-} from "substrate";
+import { Substrate, RemoveBackground, StableDiffusionXLControlNet, StableDiffusionXLInpaint } from "substrate";
 
 const s = new Substrate({ api_key: YOUR_API_KEY });
 ```
@@ -49,12 +58,7 @@ Here's the original image:
 <div className="grid grid-cols-1 mt-4 w-full">
   <Card>
     <CardContent className="flex justify-center pt-1 pb-0">
-      <Image
-        src="https://media.substrate.run/logo-sq.png"
-        width={300}
-        height={300}
-        alt="original"
-      />
+      <Image src="https://media.substrate.run/logo-sq.png" width={300} height={300} alt="original" />
     </CardContent>
   </Card>
 </div>
@@ -97,22 +101,12 @@ const res = await s.run(controlnet);
 <div className="grid grid-cols-1 lg:grid-cols-2 mt-4 w-full">
   <Card>
     <CardContent className="flex justify-center pt-1 pb-0">
-      <Image
-        src="https://media.substrate.run/illusion-1.jpg"
-        width={300}
-        height={300}
-        alt="image"
-      />
+      <Image src="https://media.substrate.run/illusion-1.jpg" width={300} height={300} alt="image" />
     </CardContent>
   </Card>
   <Card>
     <CardContent className="flex justify-center pt-1 pb-0">
-      <Image
-        src="https://media.substrate.run/illusion-2.jpg"
-        width={300}
-        height={300}
-        alt="no background"
-      />
+      <Image src="https://media.substrate.run/illusion-2.jpg" width={300} height={300} alt="no background" />
     </CardContent>
   </Card>
 </div>
@@ -122,27 +116,17 @@ Experimenting with different prompts can produce striking results:
 <div className="grid grid-cols-1 lg:grid-cols-2 mt-4 w-full">
   <Card>
     <CardContent className="flex justify-center pt-1 pb-0">
-      <Image
-        src="https://media.substrate.run/logo-atlantis-1.jpg"
-        width={300}
-        height={300}
-        alt="image"
-      />
+      <Image src="https://media.substrate.run/logo-atlantis-1.jpg" width={300} height={300} alt="image" />
     </CardContent>
   </Card>
   <Card>
     <CardContent className="flex justify-center pt-1 pb-0">
-      <Image
-        src="https://media.substrate.run/logo-atlantis-2.jpg"
-        width={300}
-        height={300}
-        alt="no background"
-      />
+      <Image src="https://media.substrate.run/logo-atlantis-2.jpg" width={300} height={300} alt="no background" />
     </CardContent>
   </Card>
 </div>
 
-### 2. Generate a variation and inpaint
+### 2. Edge variation and inpainting
 
 This workflow uses <StableDiffusionXLControlNet /> to generate a variation of the original, and <StableDiffusionXLInpaint /> to generate a variation inpainting inside a mask.
 
@@ -189,23 +173,13 @@ const res = await s.run(inpaint);
 <div className="grid grid-cols-1 lg:grid-cols-2 mt-4 w-full">
   <Card>
     <CardContent className="flex justify-center pt-1 pb-0">
-      <Image
-        src="https://media.substrate.run/ex-controlnet.jpeg"
-        width={300}
-        height={300}
-        alt="image"
-      />
+      <Image src="https://media.substrate.run/ex-controlnet.jpeg" width={300} height={300} alt="image" />
     </CardContent>
     <CardFooter className="flex justify-center">_`res.get(controlnet)`_</CardFooter>
   </Card>
   <Card>
     <CardContent className="flex justify-center pt-1 pb-0">
-      <Image
-        src="https://media.substrate.run/ex-cn-inpaint.webp"
-        width={300}
-        height={300}
-        alt="no background"
-      />
+      <Image src="https://media.substrate.run/ex-cn-inpaint.webp" width={300} height={300} alt="no background" />
     </CardContent>
     <CardFooter className="flex justify-center">_`res.get(inpaint)`_</CardFooter>
   </Card>

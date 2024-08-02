@@ -1,0 +1,284 @@
+import { Callout } from "nextra/components";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import Image from "next/image";
+import Link from "next/link";
+import { ComputeText, InpaintImage, StableDiffusionXLControlNet, StableDiffusionXLInpaint } from "@/components/nodes";
+
+<Callout emoji="֍">
+  Learn how to use Inpainting and Control Net techniques to reimagine a photo, and use <ComputeText /> to describe the
+  resulting images.
+</Callout>
+
+<div className="grid grid-cols-1 lg:grid-cols-2 mt-4 w-full">
+  <Card>
+    <CardContent className="flex justify-center pt-1 pb-0">
+      <Image src="https://media.substrate.run/office.jpg" width={600} height={450} alt="original" />
+    </CardContent>
+    <CardFooter className="w-full flex justify-center">The original image – Substrate HQ.</CardFooter>
+  </Card>
+  <Card>
+    <CardContent className="flex justify-center pt-1">
+      <Image src="https://media.substrate.run/depth-tokyo.jpg" width={600} height={450} alt="edge tokyo" />
+    </CardContent>
+    <CardFooter className="w-full flex justify-center">
+      "The living room boasts a spacious design with a large window allowing natural light and a cozy couch. Unique is
+      the open-concept office area, separated by a partial wall, offering a functional workspace while maintaining
+      unity, enhanced by plants, lamps, and a rug in the modern, minimalist decor."
+    </CardFooter>
+  </Card>
+</div>
+
+The four parts of the guide cover:
+
+1. **Inpainting**: Use <StableDiffusionXLInpaint /> to generate variations of a photo of a room in different styles.
+2. **Control Net – Edge Detection**: Use <StableDiffusionXLControlNet /> with the _`edge`_ method to generate variations structured by the edges of the original image.
+3. **Control Net – Depth Detection**: Use <StableDiffusionXLControlNet /> with the _`depth`_ method to generate variations structured by a depth map of the original image.
+4. **Describing images**: Use <ComputeText /> to describe the generated images.
+
+First, initialize Substrate:
+
+<CH.Code >
+
+```python Python
+from substrate import (
+    Substrate,
+    StableDiffusionXLControlNet,
+    StableDiffusionXLInpaint,
+    ComputeText,
+    ComputeText,
+    sb,
+)
+
+s = Substrate(api_key=YOUR_API_KEY)
+
+```
+
+```typescript TypeScript
+import {
+  Substrate,
+  StableDiffusionXLControlNet,
+  StableDiffusionXLInpaint,
+  ComputeText,
+  ComputeText,
+  sb,
+} from "substrate";
+
+const s = new Substrate({ api_key: YOUR_API_KEY });
+```
+
+</CH.Code >
+
+### 1. Inpainting
+
+Let's try generating variations of the room using <StableDiffusionXLInpaint />.
+
+- This node can also be used to inpaint the masked part of an image if a `mask_image_uri` is provided. Here, we'll inpaint in the entire image.
+- The `strength` parameter controls the strength of the generation process over the original image. Higher strength values produces images that are further from the original.
+
+<CH.Code >
+
+```python Python
+styles = ["sunlit onsen style tokyo office", "80s disco style berlin office at night"]
+images = [
+    StableDiffusionXLInpaint(
+        image_uri="https://media.substrate.run/office.jpg",
+        strength=0.75,
+        prompt=s,
+        num_images=1,
+    )
+    for s in styles
+]
+res = s.run(*images)
+```
+
+```typescript TypeScript
+const styles = ["sunlit onsen style tokyo office", "80s disco style berlin office at night"];
+const images = styles.map(s => {
+    return new StableDiffusionXLInpaint(
+        image_uri="https://media.substrate.run/office.jpg",
+        strength=0.75,
+        prompt=s,
+        num_images=1,
+    );
+})
+const res = await s.run(*images);
+```
+
+</CH.Code >
+
+<div className="grid grid-cols-1 lg:grid-cols-2 mt-4 w-full">
+  <Card>
+    <CardContent className="flex justify-center pt-1">
+      <Image src="https://media.substrate.run/inpaint-tokyo.jpg" width={600} height={450} alt="inpaint tokyo" />
+    </CardContent>
+    <CardFooter className="w-full flex justify-center">sunlit onsen style tokyo office</CardFooter>
+  </Card>
+  <Card>
+    <CardContent className="flex justify-center pt-1">
+      <Image src="https://media.substrate.run/inpaint-berlin.jpg" width={600} height={450} alt="inpaint berlin" />
+    </CardContent>
+    <CardFooter className="w-full flex justify-center">80s disco style berlin office at night</CardFooter>
+  </Card>
+</div>
+
+When using this `strength` value, some of the quality of the original is preserved in the variations, but they're quite different.
+
+<Callout emoji="֍">
+  <InpaintImage /> is a high-level alternative to `StableDiffusionXLControlNet`. You should use high-level nodes if you
+  want your node to automatically update to the latest, best model.
+</Callout>
+
+### 2. Control Net – Edge Detection
+
+Let's try using <StableDiffusionXLControlNet /> with the _`edge`_ method, which processes the original image with an edge detection algorithm and uses edges to structure generation.
+
+<CH.Code >
+
+```python Python
+styles = ["sunlit onsen style tokyo office", "80s disco style berlin office at night"]
+images = [
+    StableDiffusionXLControlNet(
+        image_uri="https://media.substrate.run/office.jpg",
+        control_method="edge",
+        prompt=s,
+        num_images=1,
+    )
+    for s in styles
+]
+res = s.run(*images)
+```
+
+```typescript TypeScript
+const styles = ["sunlit onsen style tokyo office", "80s disco style berlin office at night"];
+const images = styles.map(s => {
+    return new StableDiffusionXLControlNet(
+        image_uri="https://media.substrate.run/office.jpg",
+        control_method="edge",
+        prompt=s,
+        num_images=1,
+    )
+});
+const res = await s.run(*images);
+```
+
+</CH.Code >
+
+<div className="grid grid-cols-1 lg:grid-cols-2 mt-4 w-full">
+  <Card>
+    <CardContent className="flex justify-center pt-1">
+      <Image src="https://media.substrate.run/edge-tokyo.jpg" width={600} height={450} alt="edge tokyo" />
+    </CardContent>
+    <CardFooter className="w-full flex justify-center">sunlit onsen style tokyo office</CardFooter>
+  </Card>
+  <Card>
+    <CardContent className="flex justify-center pt-1">
+      <Image src="https://media.substrate.run/edge-berlin.jpg" width={600} height={450} alt="edge berlin" />
+    </CardContent>
+    <CardFooter className="w-full flex justify-center">80s disco style berlin office at night</CardFooter>
+  </Card>
+</div>
+
+### 3. Control Net – Depth Detection
+
+Let's try using <StableDiffusionXLControlNet /> with the _`depth`_ method, which processes the original image with a depth detection algorithm and uses depth to structure generation.
+
+<CH.Code >
+
+```python Python
+styles = ["sunlit onsen style tokyo office", "80s disco style berlin office at night"]
+images = [
+    StableDiffusionXLControlNet(
+        image_uri="https://media.substrate.run/office.jpg",
+        control_method="depth",
+        prompt=s,
+        num_images=1,
+    )
+    for s in styles
+]
+```
+
+```typescript TypeScript
+const styles = ["sunlit onsen style tokyo office", "80s disco style berlin office at night"];
+const images = styles.map((s) => {
+  return new StableDiffusionXLControlNet(
+    (image_uri = "https://media.substrate.run/office.jpg"),
+    (control_method = "depth"),
+    (prompt = s),
+    (num_images = 1),
+  );
+});
+```
+
+</CH.Code >
+
+### 4. Describing images
+
+We can describe the content of the images using <ComputeText />, and then summarize the generated descriptions using <ComputeText />.
+
+We run the pipeline by calling `substrate.run` with the terminal nodes, `summaries`.
+
+<CH.Code >
+
+```python Python
+descriptions = [
+    ComputeText(
+        prompt="Describe the interesting interior decor touches in this image",
+        image_uris=[i.future.outputs[0].image_uri],
+    )
+    for i in images
+]
+summaries = [
+    ComputeText(
+        prompt=sb.concat(
+            "Summarize the 2 most interesting details in one sentence, be concise: ",
+            d.future.text,
+        ),
+    )
+    for d in descriptions
+]
+res = s.run(*summaries)
+```
+
+```typescript TypeScript
+const descriptions = images.map(i => {
+    return new ComputeText(
+        prompt="Describe the interesting interior decor touches in this image",
+        image_uris=[i.future.outputs.at(0).image_uri],
+    )
+});
+const summaries = descriptions.map(d => {
+    return new ComputeText(
+        prompt=sb.concat(
+            "Summarize the 2 most interesting details in one sentence, be concise: ",
+            d.future.text,
+        ),
+    )
+});
+const res = await s.run(*summaries);
+```
+
+Here's the final result:
+
+</CH.Code >
+
+<div className="grid grid-cols-1 lg:grid-cols-2 mt-4 w-full">
+  <Card>
+    <CardContent className="flex justify-center pt-1">
+      <Image src="https://media.substrate.run/depth-tokyo.jpg" width={600} height={450} alt="edge tokyo" />
+    </CardContent>
+    <CardFooter className="w-full flex justify-center">
+      The living room boasts a spacious design with a large window allowing natural light and a cozy couch. Unique is
+      the open-concept office area, separated by a partial wall, offering a functional workspace while maintaining
+      unity, enhanced by plants, lamps, and a rug in the modern, minimalist decor.
+    </CardFooter>
+  </Card>
+  <Card>
+    <CardContent className="flex justify-center pt-1">
+      <Image src="https://media.substrate.run/depth-berlin.jpg" width={600} height={450} alt="edge berlin" />
+    </CardContent>
+    <CardFooter className="w-full flex justify-center">
+      The image features a contemporary office with a captivating pink and purple color scheme: vibrant pink walls
+      instill energy, while elegant purple furniture adds sophistication.
+    </CardFooter>
+  </Card>
+</div>

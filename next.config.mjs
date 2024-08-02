@@ -25,7 +25,7 @@ const withNextra = nextra({
 
 const nextConfig = {
   images: {
-    domains: ["media.substrate.run"],
+    domains: ["media.substrate.run", "cdn.substrate.run"],
   },
 };
 

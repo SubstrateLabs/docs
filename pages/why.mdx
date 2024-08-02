@@ -14,11 +14,11 @@ import Diagram from "@/components/diagrams/rag-why";
 
 ### Compound AI
 
-Combining multiple model outputs is an effective approach for improving the results of AI applications. A popular example of this is RAG, in which search is used to augment the context of a language model. It often looks something like this:
+Combining multiple model outputs is an effective approach for improving the results of AI applications. A popular example of this is [RAG](/guides/rag-intro), in which search is used to augment the context of a language model. It often looks something like this:
 
 <Diagram />
 
-Tools like [LangChain](https://www.langchain.com/) are directionally right because they encourage pipelining. But they offer clunky abstractions, and produce fundamentally inefficient programs.
+Tools like [LangChain](https://www.langchain.com/) are directionally right because they encourage pipelining. But they offer unwieldy (and often unnecessary) abstractions, and produce fundamentally inefficient programs. Read our [blog post](https://blog.substrate.run/blog/langchain) on the cognitive overhead of using LangChain, compared to Substrate.
 
 ### Faster execution
 

@@ -3,9 +3,10 @@
   "run-python-code": "Run Python code",
   "rag-intro": "RAG: Summarize Hacker News comments",
   "vector-stores": "Store & query vectors",
-  "reimagine-a-room": "Reimagine a room",
-  "transcription": "Transcribe audio & video",
-  "remove-background": "Separate foreground & background",
+  "image-generation": "Image generation",
+  "background-removal": "Background removal",
+  "structured-image-generation": "Structured image generation",
   "masked-image-generation": "Masked image generation",
+  "transcribe-speech": "Transcribe speech",
   "mixture-of-agents": "Mixture of Agents"
 }

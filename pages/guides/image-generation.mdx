@@ -1,0 +1,108 @@
+import { Callout } from "nextra/components";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import Image from "next/image";
+import Link from "next/link";
+import { GenerateImage, ComputeText, UpscaleImage } from "@/components/nodes";
+import Diagram from "@/components/diagrams/image-generation";
+
+<Callout emoji="֍">An introduction to image generation on Substrate</Callout>
+
+Prompt: "futuristic city of atlantis"
+
+<details>
+
+<summary>Enhanced image prompt</summary>
+
+A sprawling metropolis of iridescent spires and crystalline towers pierces the sky, its architecture a blend of organic and metallic curves. Towering trees with glowing bark and leaves that shimmer like diamonds stretch towards the clouds, their roots entwined with the city's infrastructure. A network of levitating walkways and glowing, fiber-optic "streets" crisscross the city, weaving through a tapestry of gleaming skyscrapers and futuristic domes. In the distance, a majestic, winged statue of a long-forgotten king soars above the city, its wings beating in slow motion as it surveys the metropolis below.
+
+</details>
+
+<div className="grid grid-cols-1 lg:grid-cols-2 mt-4 w-full">
+  <Card>
+    <CardContent className="flex justify-center pt-1">
+      <Image src="https://media.substrate.run/atlantis-generate.jpeg" width={300} height={300} alt="image" />
+    </CardContent>
+    <CardFooter className="w-full flex justify-center">Generated image</CardFooter>
+  </Card>
+  <Card>
+    <CardContent className="flex justify-center pt-1">
+      <Image src="https://media.substrate.run/atlantis-upscale.jpeg" width={300} height={300} alt="image" />
+    </CardContent>
+    <CardFooter className="w-full flex justify-center">Upscaled image</CardFooter>
+  </Card>
+</div>
+
+We'll build a workflow that takes a short prompt ("futuristic city of atlantis"), and uses the imaginative power of generative AI to produce a highly detailed result. We'll:
+
+- Generate an enhanced image prompt using <ComputeText />
+- Generate an image using <GenerateImage />
+- Upscale the image using <UpscaleImage />
+
+<Diagram />
+
+First, initialize Substrate:
+
+<CH.Code >
+
+```python Python
+from substrate import (
+    Substrate,
+    ComputeText,
+    GenerateImage,
+    UpscaleImage,
+    sb,
+)
+
+s = Substrate(api_key=YOUR_API_KEY)
+
+```
+
+```typescript TypeScript
+import { Substrate, ComputeText, GenerateImage, UpscaleImage, sb } from "substrate";
+
+const s = new Substrate({ api_key: YOUR_API_KEY });
+```
+
+</CH.Code >
+
+Declare and connect the nodes of the pipeline:
+
+- Generate an enhanced image prompt using <ComputeText />
+- Generate an image using <GenerateImage />
+- Upscale the image using <UpscaleImage />
+
+Run the pipeline by calling `substrate.run` with the terminal node of the workflow, `upscale`.
+
+<CH.Code>
+
+```python Python
+prompt = "futuristic city of atlants"
+description = ComputeText(
+    prompt=f"create a description of an image of {prompt}. we'll use this description to generate an image. be concise and terse focusing on the subject. just return the description, no preamble.",
+)
+image = GenerateImage(prompt=description.future.text)
+upscale = UpscaleImage(
+    prompt=description.future.text,
+    image_uri=image.future.image_uri,
+    output_resolution=2048,
+)
+res = s.run(upscale)
+```
+
+```typescript TypeScript
+const prompt = "futuristic city of atlants";
+const description = new ComputeText({
+  prompt: `create a description of an image of ${prompt}.
+  we'll use this description to generate an image. be concise and terse focusing on the subject.
+  just return the description, no preamble.`,
+});
+const image = new GenerateImage({ prompt: description.future.text });
+const upscale = new UpscaleImage({
+  prompt: description.future.text,
+  image_uri: image.future.image_uri,
+  output_resolution: 2048,
+});
+const res = await s.run(upscale);
+```
+
+</CH.Code>

@@ -1,0 +1,203 @@
+import { Callout } from "nextra/components";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import Image from "next/image";
+import Link from "next/link";
+import {
+  GenerateImage,
+  RemoveBackground,
+  EraseImage,
+  InpaintImage,
+  StableDiffusionXLLightning,
+  StableDiffusionXLInpaint,
+} from "@/components/nodes";
+import Diagram from "@/components/diagrams/background-removal";
+
+<Callout emoji="֍">An introduction to other image generation techniques</Callout>
+
+<div className="grid grid-cols-1 lg:grid-cols-2 mt-4 w-full">
+  <Card>
+    <CardContent className="flex justify-center pt-1">
+      <Image
+        src="https://cdn.substrate.run/u/TdI00FeAB8nzr0Su/4588c3de07b592f70fe628d58be851f9f91015d6691cb394_1722595384.jpeg"
+        width={300}
+        height={300}
+        alt="image"
+      />
+    </CardContent>
+    <CardFooter className="w-full flex justify-center">Red chair in a room</CardFooter>
+  </Card>
+  <Card>
+    <CardContent className="flex justify-center pt-1">
+      <Image
+        src="https://cdn.substrate.run/u/TdI00FeAB8nzr0Su/4951c5436a9c18581f8b995ab3e72fbdf6cc9976008ee033_1722595390.jpeg"
+        width={300}
+        height={300}
+        alt="image"
+      />
+    </CardContent>
+    <CardFooter className="w-full flex justify-center">Remove the chair</CardFooter>
+  </Card>
+</div>
+
+Let's build a workflow that removes the foreground object from an image. The pipeline:
+
+- Generates an image using <GenerateImage/>
+- Removes the background of the image using <RemoveBackground/>, creating a foreground mask
+- Erase content inside the mask using <EraseImage/>
+- Fill in details using <InpaintImage/>
+
+<Diagram />
+
+First, initialize Substrate:
+
+<CH.Code >
+
+```python Python
+from substrate import (
+    Substrate,
+    GenerateImage,
+    RemoveBackground,
+    EraseImage,
+    InpaintImage,
+    sb,
+)
+
+s = Substrate(api_key=YOUR_API_KEY)
+
+```
+
+```typescript TypeScript
+import { Substrate, GenerateImage, RemoveBackground, EraseImage, sb } from "substrate";
+
+const s = new Substrate({ api_key: YOUR_API_KEY });
+```
+
+</CH.Code >
+
+Generate an image using <GenerateImage />.
+
+<details>
+<summary>Advanced image generation</summary>
+
+- For more control over Stable Diffusion XL, use [StableDiffusionXLLightning](https://substrate.run/nodes#StableDiffusionXLLightning).
+- Provide a seed to "pin" the initial noise in the image generation process – this can be a good way to experiment with subtle changes in your prompt.
+
+</details>
+
+<CH.Code>
+
+```python Python
+prompt="by edward hopper, a dark red chesterfield leather wing chair in a dark majestic room, pillars, celestial galaxy wallpaper",
+image = GenerateImage(
+    prompt=prompt,
+)
+```
+
+```typescript TypeScript
+const prompt =
+  "by edward hopper, a dark red chesterfield leather wing chair in a dark majestic room, celestial galaxy wallpaper";
+const image = new GenerateImage({
+  prompt: prompt,
+});
+```
+
+</CH.Code>
+
+Remove the background from the image, and turn the result into a "mask" (a black and white image). Without `return_mask=True`, <RemoveBackground /> returns the foreground segment of the image.
+
+<CH.Code>
+
+```python Python
+mask = RemoveBackground(
+    image_uri=image.future.image_uri,
+    return_mask=True,
+)
+```
+
+```typescript TypeScript
+const mask = new RemoveBackground({
+  image_uri: image.future.image_uri,
+  return_mask: true,
+});
+```
+
+</CH.Code>
+
+Erase the content inside the mask using <EraseImage />. This produces a rough approximation of erasure, so we follow it with <InpaintImage />. (For deeper control of the inpainting process, use <StableDiffusionXLInpaint />.) Finally, call `substrate.run` with the terminal node of the pipeline, `inpaint`.
+
+<CH.Code>
+
+```python Python
+erase = EraseImage(
+    image_uri=image.future.image_uri,
+    mask_image_uri=mask.future.image_uri,
+)
+inpaint = InpaintImage(
+    image_uri=erase.future.image_uri,
+    prompt=prompt,
+)
+res = s.run(inpaint)
+```
+
+```typescript TypeScript
+const erase = new EraseImage({
+  image_uri: image.future.image_uri,
+  mask_image_uri: mask.future.image_uri,
+});
+const inpaint = new InpaintImage({
+  image_uri: erase.future.image_uri,
+  prompt: prompt,
+});
+const res = await s.run(inpaint);
+```
+
+</CH.Code>
+
+Here's a sample result from this pipeline:
+
+<div className="grid grid-cols-1 lg:grid-cols-2 mt-4 w-full">
+  <Card>
+    <CardContent className="flex justify-center pt-1">
+      <Image
+        src="https://cdn.substrate.run/u/TdI00FeAB8nzr0Su/4588c3de07b592f70fe628d58be851f9f91015d6691cb394_1722595384.jpeg"
+        width={300}
+        height={300}
+        alt="image"
+      />
+    </CardContent>
+    <CardFooter className="w-full flex justify-center">_`res.get(image)`_</CardFooter>
+  </Card>
+  <Card>
+    <CardContent className="flex justify-center pt-1">
+      <Image
+        src="https://cdn.substrate.run/u/TdI00FeAB8nzr0Su/e546abbc98b4f4d2e7695938272174840a4041563fb161cb_1722595388.png"
+        width={300}
+        height={300}
+        alt="image"
+      />
+    </CardContent>
+    <CardFooter className="w-full flex justify-center">_`res.get(mask)`_</CardFooter>
+  </Card>
+  <Card>
+    <CardContent className="flex justify-center pt-1">
+      <Image
+        src="https://cdn.substrate.run/u/TdI00FeAB8nzr0Su/2c0ab56f3a5c2b9a36c908248a4f4cc6cdde720ce2301c22_1722595389.jpeg"
+        width={300}
+        height={300}
+        alt="no background"
+      />
+    </CardContent>
+    <CardFooter className="w-full flex justify-center">_`res.get(erase)`_</CardFooter>
+  </Card>
+  <Card>
+    <CardContent className="flex justify-center pt-1">
+      <Image
+        src="https://cdn.substrate.run/u/TdI00FeAB8nzr0Su/4951c5436a9c18581f8b995ab3e72fbdf6cc9976008ee033_1722595390.jpeg"
+        width={300}
+        height={300}
+        alt="image"
+      />
+    </CardContent>
+    <CardFooter className="w-full flex justify-center">_`res.get(inpaint)`_</CardFooter>
+  </Card>
+</div>

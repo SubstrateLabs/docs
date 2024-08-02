@@ -1,9 +1,24 @@
 import { Callout } from "nextra/components";
 import { TranscribeSpeech } from "@/components/nodes";
+import Image from "next/image";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import Link from "next/link";
 
-<Callout emoji="֍">Learn how to transcribe audio and video</Callout>
+<Callout emoji="֍">Learn how to transcribe speech from audio and video files</Callout>
 
-The <TranscribeSpeech/> node transcribes speech from audio or video input, with additional built-in capabilities:
+<Card>
+  <CardContent className="flex justify-center pt-4 pb-0 rounded">
+    <Image className="rounded" src="https://media.substrate.run/federer.gif" width={600} height={600} alt="image" />
+  </CardContent>
+</Card>
+
+The <TranscribeSpeech/> node transcribes speech from audio or video files. Supported input types include:
+
+- Base-64 encoded data strings (if your media is small enough to fit in a request payload). Be sure to include the `data:` prefix with a [mime type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types).
+- Hosted media URLs (with a wide range of supported formats)
+- YouTube URLs
+
+`TranscribeSpeech` also includes these built-in capabilities:
 
 - segmentation by sentence
 - diarization (speaker identification)
@@ -130,3 +145,13 @@ const transcript = new TranscribeSpeech({
 ```
 
 </details>
+
+You can customize the chapter summarization feature by implementing your own pipeline. To learn how to do this, and see example of how to use text segments to create an animated captions experience, check out our runnable [example on val.town](https://www.val.town/v/substrate/subaudio). You can also find this example in the `examples/descript` directory of the [substrate-python](https://github.com/substratelabs/substrate-python) and [substrate-typescript](https://github.com/substratelabs/substrate-typescript) SDK repositories.
+
+<Link href="https://www.val.town/v/substrate/subaudio">
+  <Card>
+    <CardContent className="flex justify-center pt-4 pb-0 rounded">
+      <Image className="rounded" src="https://media.substrate.run/federer.gif" width={600} height={600} alt="image" />
+    </CardContent>
+  </Card>
+</Link>
