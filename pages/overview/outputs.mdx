@@ -1,0 +1,144 @@
+import { Callout } from "nextra/components";
+import { GenerateImage } from "@/components/nodes";
+
+## The graph result
+
+<CH.Code>
+
+```python Python
+story = ComputeText(prompt="tell me a story")
+summary = ComputeText(prompt=sb.format("summarize: {story}", story=story.future.text))
+response = substrate.run(summary)
+```
+
+```typescript TypeScript
+const story = new ComputeText({ prompt: "tell me a story" });
+const summary = new ComputeText({ prompt: sb.interpolate`summarize: ${story.future.text}` });
+const response = await substrate.run(summary);
+```
+
+</CH.Code>
+
+`substrate.run` returns a "graph result" mapping node IDs to node outputs:
+
+```json response.json
+{
+  "node_1": { "text": "output" },
+  "node_2": { "text": "other output" }
+}
+```
+
+The raw _`response.json`_ can be a useful way to inspect and debug the outputs of a graph.
+
+But typically, you'll use _`response.get`_ to retrieve the output of a node:
+
+<CH.Code>
+
+```python Python
+summary_out = response.get(summary)
+print(summary_out.text)
+```
+
+```typescript TypeScript
+const summaryOut = response.get(summary);
+console.log(summaryOut.text);
+```
+
+</CH.Code>
+
+## Node configuration
+
+### Customizing the graph result
+
+When inspecting the graph result, you can name and hide nodes to make the result easier to work with:
+
+- **`id`**: Name a node by setting `id` to a custom ID.
+- **`hide`**: Hide a node's output from the graph result.
+
+### Caching and retries
+
+When building out a graph, it can be useful to cache the result of a node as you iterate on subsequent setups:
+
+- **`_cache_age`**: How long to cache the result, in seconds.
+- **`_cache_keys`**: A list of specific output keys to cache. Other keys will not be cached.
+
+When [running custom code](/reference/run-python), it can be useful to retry the code automatically (e.g. when using an unreliable service).
+
+- **`_max_retries`**: The max number of retries to attempt.
+
+### Storing outputs
+
+- **`store`**: When using nodes that output media ([images](https://substrate.run/nodes#GenerateImage), [audio](https://substrate.run/nodes#GenerateSpeech), or [video](https://substrate.run/nodes#StableVideoDiffusion)), you can opt-in to hosting their output (on Substrate, or your own storage provider) using the _`store`_ parameter.
+- When [generating embeddings](https://substrate.run/nodes#EmbedText), you can store them in Substrate's [built-in vector storage](/guides/vector-stores).
+
+```python
+# Returns image data
+GenerateImage(prompt="your prompt")
+
+# Returns an image URL
+GenerateImage(
+    prompt="your prompt",
+    # mark
+    store="hosted",
+)
+```
+
+<details>
+<summary>Learn more</summary>
+
+- Use _`store: "hosted"`_ to host the image on Substrate.
+- Use _`store: "s3://..."`_ to host on your own storage. See [External files](/reference/external-files) to learn more.
+
+Without the `store` parameter:
+
+- Nodes with image output return base 64-encoded JPEG data
+
+```json
+"image_uri": "data:image/jpeg;base64,/9j/4kZJRBAQYABAAD/4QYRXhpZgAA0AKAA1IBEAAAPEAAAAASg..."
+```
+
+- Nodes with audio output return base 64-encoded WAV data
+
+```json
+"audio_uri": "data:audio/wav;base64,/9j/4QSkZJRgABAQEAYAAAD/BYRXhpZgAATU0A1ABIBAAAFAAAASg..."
+```
+
+</details>
+
+## Shaping outputs
+
+To shape an output, or combine the outputs of multiple nodes into a single response, you can use a [`Box`](/reference/box):
+
+<CH.Code>
+
+```python Python
+from substrate import Box
+
+# ...
+
+box = Box(
+  value={
+    "story": story.future.text,
+    "summary": summary.future.text,
+  }
+)
+res = substrate.run(box)
+```
+
+```typescript TypeScript
+import { Box } from "substrate";
+
+// ...
+
+const box = new Box({
+  value: {
+    story: story.future.text,
+    summary: summary.future.text,
+  },
+});
+const res = await substrate.run(box);
+```
+
+</CH.Code>
+
+You can also [stream](/reference/streaming) outputs.

@@ -81,16 +81,12 @@ In this starter example, we generate a story with a language model using <Comput
 
 ```python Python
 story = ComputeText(prompt="tell me a story")
-summary = ComputeText(
-    prompt=sb.format("summarize this story in one sentence: {story}", story=story.future.text),
-)
+summary = ComputeText(prompt=sb.format("summarize: {story}", story=story.future.text))
 ```
 
 ```typescript TypeScript
 const story = new ComputeText({ prompt: "tell me a story" });
-const summary = new ComputeText({
-  prompt: sb.interpolate`summarize this story in one sentence: ${story.future.text}`,
-});
+const summary = new ComputeText({ prompt: sb.interpolate`summarize: ${story.future.text}` });
 ```
 
 </CH.Code>
@@ -103,9 +99,6 @@ const summary = new ComputeText({
 
 ## Run the graph
 
-<br />
-
-<CH.Section>
 We've created a simple two-node graph chaining _`story`_ → _`summary`_. Run the graph by calling _`substrate.run`_.
 
 <CH.Code>
@@ -119,7 +112,6 @@ const response = await substrate.run(summary);
 ```
 
 </CH.Code>
-</CH.Section>
 
 Substrate automatically finds the upstream dependencies for nodes.
 
@@ -127,13 +119,11 @@ Substrate automatically finds the upstream dependencies for nodes.
 - Passing upstream nodes is optional.
 - You may pass disconnected nodes (or multiple graphs) to run them in parallel.
 
+<Callout emoji="">You can [stream](/reference/streaming) outputs using `substrate.stream`</Callout>
+
 ## Get the output
 
-<br />
-
-<CH.Section>
-
-After running the graph, use _`response.get`_ to retrieve the output of any of the nodes in the graph.
+After running the graph, use _`response.get`_ to retrieve the output of a node.
 
 <CH.Code>
 
@@ -148,45 +138,3 @@ console.log(summaryOut.text);
 ```
 
 </CH.Code>
-
-</CH.Section>
-
-<CH.Section>
-
-If you want to combine the outputs of multiple nodes into a single response, you can use a [`Box`](/reference/box):
-
-<CH.Code>
-
-```python Python
-from substrate import Box
-
-# ...
-
-box = Box(
-  value={
-    "story": story.future.text,
-    "summary": summary.future.text,
-  }
-)
-res = substrate.run(box)
-```
-
-```typescript TypeScript
-import { Box } from "substrate";
-
-// ...
-
-const box = new Box({
-  value: {
-    story: story.future.text,
-    summary: summary.future.text,
-  },
-});
-const res = await substrate.run(box);
-```
-
-</CH.Code>
-
-</CH.Section>
-
-You can also [stream](/reference/streaming) outputs.
