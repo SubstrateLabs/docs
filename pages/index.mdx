@@ -7,11 +7,9 @@ import { FirstGraph } from "@/components/diagrams/FirstGraph";
 
 Substrate is a **powerful SDK** for building with AI, with [batteries included](https://substrate.run/nodes): language models, image generation, built-in vector storage, sandboxed code execution, and more. To use Substrate, you simply connect tasks, and then run the workflow. With this simple approach, we can create AI systems (from RAG, to agents, to multi-modal generative experiences) by simply describing the computation, with **zero additional abstractions**.
 
-Substrate is also a **workflow execution** and **inference** engine, optimized for running compound AI workloads. Wiring together multiple inference APIs is inherently slow – whether you do it yourself, or use a framework like LangChain. Substrate lets you ditch the framework, write less code, and run compound AI fast. Learn more: [Why Substrate?](/why)
+Substrate is also a **workflow execution** and **inference** engine, optimized for running compound AI workloads. Wiring together multiple inference APIs is inherently slow – whether you do it yourself, or use a framework like LangChain. Substrate lets you ditch the framework, write less code, and run compound AI fast.
 
-### Mini examples
-
-Each example below is hosted in a runnable code environment, so you can get a feel for Substrate without opening your editor. (Substrate supports JavaScript, TypeScript, and Python, with more languages on the way).
+Each mini example below is hosted in a runnable code environment, so you can get a feel for Substrate without opening your editor. (Substrate supports JavaScript, TypeScript, and Python, with more languages on the way).
 
 <Tabs items={['Summarize text', 'Wrangle structured data', 'Image generation', 'Hacker News research', 'Spanish lesson']}>
 <Tabs.Tab>
@@ -96,3 +94,126 @@ You can run this code (hit "Preview") or [view on val.town](https://www.val.town
 
 </Tabs.Tab>
 </Tabs>
+
+## Why Substrate?
+
+### 1. Simple abstractions that run fast.
+
+Principled [API design](/reference/api-design) runs deep in our DNA: [Ben](https://www.linkedin.com/in/bgdotjpg/) was at Stripe for nearly a decade. At Substrate, we believe the new discipline of building [AI-integrated software](https://blog.substrate.run/blog/json-generation) needs **simpler abstractions**. Compare the [cognitive overhead](https://blog.substrate.run/langchain) of using Substrate vs. [LangChain](https://www.langchain.com) in this example:
+
+<CH.Code>
+
+```python Substrate
+from substrate import ComputeText, Substrate, sb
+
+s = Substrate(api_key="SUBSTRATE_API_KEY")
+
+topic1 = "a magical forest"
+topic2 = "a futuristic city"
+story1 = ComputeText(prompt=f"Tell me a story about {topic1}")
+story2 = ComputeText(prompt=f"Tell me a story about {topic2}")
+summary = ComputeText(prompt=sb.format(
+    "Summarize these two stories:\nStory 1: {story1}\nStory 2: {story2}",
+    story1=story1.future.text,
+    story2=story2.future.text)
+)
+response = s.run(summary)
+```
+
+```python LangChain
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnableParallel
+from langchain_openai import ChatOpenAI
+
+model = ChatOpenAI(
+    base_url="https://api.together.xyz/v1",
+    api_key="TOGETHER_API_KEY",
+    model="mistralai/Mistral-7B-Instruct-v0.3",
+)
+
+story_prompt1 = ChatPromptTemplate.from_template(
+    "Tell me a story about {topic1}")
+story_prompt2 = ChatPromptTemplate.from_template(
+    "Tell me a story about {topic2}")
+summarize_prompt = ChatPromptTemplate.from_template(
+    "Summarize these two stories:\nStory 1: {story1}\nStory 2: {story2}"
+)
+
+output_parser = StrOutputParser()
+
+story_chain1 = story_prompt1 | model | output_parser
+story_chain2 = story_prompt2 | model | output_parser
+
+parallel_chain = RunnableParallel(
+    story1={"topic1": lambda x: x["topic1"]} | story_chain1,
+    story2={"topic2": lambda x: x["topic2"]} | story_chain2,
+)
+summarize_chain = summarize_prompt | model | output_parser
+
+topics = {"topic1": "a magical forest", "topic2": "a futuristic city"}
+
+parallel_result = parallel_chain.invoke(topics)
+summary = summarize_chain.invoke({
+    "story1": parallel_result['story1'],
+    "story2": parallel_result['story2']
+})
+```
+
+</CH.Code>
+
+Chaining a few LLM calls is surprisingly complex using LangChain. This example requires 3x more code, and several extra abstractions:
+
+- `ChatPromptTemplate` – Substrate lets you simply use format strings, or even [jinja](/overview/futures#joining-strings).
+- `StrOutputParser` – Substrate uses idiomatic tools (like format strings) to [transform outputs](/overview/futures), follows the [Unix Philosophy](/reference/api#philosophy): "Don't clutter output with extraneous information".
+- `RunnableParallel` – Substrate automatically parallelizes your workflow. Because `story1` and `story2` don't depend on anything, Substrate runs them in parallel.
+
+Substrate's unique approach lets you work with **simple abstractions** at the conceptual layer, and trust Substrate to **run your workload fast** when you call _`substrate.run`_:
+
+- First, we analyze your workload as a [directed acyclic graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph) and **optimize the graph**: for example, merging nodes that can be run in a batch.
+- Then, we schedule the graph with **optimized parallelism**. No more async programming: just connect nodes, and let Substrate parallelize your workload.
+- Our infrastructure guarantees **optimized data locality**. Your entire workload runs in the same cluster (often on the same machine), so you won't spend fractions of a second per task on unnecessary data roundtrips and cross-region HTTP transport.
+
+### 2. Unified platform to build fast.
+
+Substrate is a unified platform for building **compound AI systems**, and hosts a comprehensive set of high-performance tools. But you don't have to run everything on Substrate – we also let you connect [external providers](/overview/start#external-providers). Substrate includes:
+
+| **Component**                                    | **Replaces**                                                                                                                                                                                                                 |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Curated library of optimized AI models           | [Modal](https://modal.com), [Baseten](https://www.baseten.co/library/), [Replicate](https://replicate.com), [Together](https://www.together.ai), [Fireworks](https://fireworks.ai), [Fal](https://fal.ai)                    |
+| Simple abstractions for compound AI              | [LangGraph](https://www.langchain.com/langgraph), [LangChain](https://www.langchain.com), [Martian](https://withmartian.com), [Baseten](https://www.baseten.co/blog/introducing-baseten-chains/), [Modal](https://modal.com) |
+| Built-in [vector storage](/guides/vector-stores) | [Pinecone](https://pinecone.io/), [Weaviate](https://weaviate.io/), [Vespa](https://vespa.ai/), [Zilliz](https://zilliz.com/), [Meilisearch](https://www.meilisearch.com)                                                    |
+| Built-in [code interpreter](/guides/run-python)  | [E2B](https://e2b.dev), [Modal](https://modal.com)                                                                                                                                                                           |
+
+Our unified approach makes Substrate the best choice for **building fast**. And because everything is colocated, your workloads also run fast.
+
+### 3. Zero infrastructure to manage.
+
+Many inference APIs ([Baseten](https://www.baseten.co/library/), [Replicate](https://replicate.com/)) are actually thin wrappers over serverless GPUs. The performance of serverless providers is unreliable: you'll run into unpredictable cold starts. And the serverless model is more expensive: you pay for GPU time at the highest market rates, and you're billed for idle compute time (during spinup, and waiting for the idle timeout to trigger a scale down). Though it might not feel like it: you're still managing infra.
+
+Here's another example: all inference API providers impose rate limits. You may have seen or implemented code like the snippet below, to handle rate limit errors with exponential backoff. Here we are, managing infra again.
+
+<CH.Code>
+
+```python Others
+for sleep_time in [1, 2, 4]:
+    try:
+        # ...
+        response = await async_client.chat.completions.create(
+            model=model,
+            messages=messages,
+        )
+        break
+    except together.error.RateLimitError as e:
+        print(e)
+        await asyncio.sleep(sleep_time)
+```
+
+```python Substrate
+text = ComputeText(prompt=prompt)
+response = substrate.run(text)
+```
+
+</CH.Code>
+
+Instead of rate limits, Substrate uses a concurrency limit – the number of nodes that you can run in parallel. Just call _`substrate.run`_: Substrate knows your concurrency limit, and manages scheduling accordingly.
