@@ -189,9 +189,9 @@ Our unified approach makes Substrate the best choice for **building fast**. And 
 
 ### 3. Zero infrastructure to manage.
 
-Many inference APIs ([Baseten](https://www.baseten.co/library/), [Replicate](https://replicate.com/)) are actually thin wrappers over serverless GPUs. The performance of serverless providers is unreliable: you'll run into unpredictable cold starts. And the serverless model is more expensive: you pay for GPU time at the highest market rates, and you're billed for idle compute time (during spinup, and waiting for the idle timeout to trigger a scale down). Though it might not feel like it: you're still managing infra.
+Some inference APIs ([Baseten](https://www.baseten.co/library/), [Replicate](https://replicate.com/), [Fal](https://fal.ai)) are actually thin wrappers over serverless GPUs. The performance of serverless providers is unreliable: you'll run into unpredictable cold starts. And serverless compute is inherently more expensive: you'll pay for GPU time at the highest market rates, and you're billed for idle compute time (during spinup, and waiting for the idle timeout to trigger a scale down). When you're thinking about these things, you're still managing infra.
 
-Here's another example: all inference API providers impose rate limits. You may have seen or implemented code like the snippet below, to handle rate limit errors with exponential backoff. Here we are, managing infra again.
+All inference API providers impose rate limits. You may have seen or implemented code like the snippet below, to handle rate limit errors with exponential backoff. Here we are, managing infra again.
 
 <CH.Code>
 
