@@ -44,7 +44,7 @@ _`yarn add substrate`_
 
 ## Initialize Substrate
 
-Substrate uses API keys to authenticate requests. Create an API key in [your Substrate Dashboard](/dashboard/keys). Then, import and initialize the _`Substrate`_ client with your API key.
+Substrate uses API keys to authenticate requests. Create an API key in the [Substrate Dashboard](/dashboard/keys). Then, import and initialize the _`Substrate`_ client with your API key.
 
 <CH.Code>
 
@@ -66,6 +66,33 @@ const substrate = new Substrate({ apiKey: YOUR_API_KEY });
   Your API keys carry the ability to make requests using your Substrate account, so be sure to keep them secure. Do not
   share your API keys in areas such as publicly-accessible client-side code, social media, or public GitHub repos.
 </Callout>
+
+Substrate supports connecting to external providers like OpenAI and Anthropic. To use external providers, provide `secrets` when initializing the _`Substrate`_ client:
+
+<CH.Code>
+
+```python Python
+from substrate import Substrate, ComputeText, sb, Secrets
+
+substrate = Substrate(
+    api_key=SUBSTRATE_API_KEY,
+    secrets=Secrets(
+        openai="OPENAI_API_KEY",
+        anthropic="ANTHROPIC_API_KEY"),
+)
+```
+
+```typescript TypeScript
+const substrate = new Substrate({
+  apiKey: SUBSTRATE_API_KEY,
+  secrets: {
+    openai: "YOUR_OPENAI_KEY",
+    anthropic: "YOUR_ANTHROPIC_KEY",
+  },
+});
+```
+
+</CH.Code>
 
 ## Connect tasks
 
