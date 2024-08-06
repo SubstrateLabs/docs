@@ -1,11 +1,16 @@
 import { Callout } from "nextra/components";
 
-<Callout emoji="֍">
-  All additions and updates to the Substrate API, in reverse-chronological
-  order.
-</Callout>
+<Callout emoji="֍">All additions and updates to the Substrate API, in reverse-chronological order.</Callout>
 
 Your [API and SDK version](/reference/versioning) controls the API behavior you see. Upgrade to the latest SDK version for new nodes and the latest functionality.
+
+## Aug 4, 2024
+
+[PyPI 220240617.1.7](https://pypi.org/project/substrate/220240617.1.7/) | [npm 120240617.1.8](https://www.npmjs.com/package/substrate/v/120240617.1.8)
+
+- You can now use OpenAI and Anthropic (GPT-4o and Claude 3.5 Sonnet) using Substrate. First, add your OpenAI or Anthropic API key when [initializing Substrate](https://docs.substrate.run/overview/start#external-providers), and then select a model using the [model](https://www.substrate.run/nodes#ComputeText-model) parameter.
+- All Llama 3 models have been upgraded to Llama 3.1. We've also added Meta's most advanced language model, Llama 3.1 405B. To use these models, select them using the [model](https://www.substrate.run/nodes#ComputeText-model) parameter.
+- Added a new node: [`StableVideoDiffusion`](https://www.substrate.run/nodes#StableVideoDiffusion). This node takes an image as input, and generates a short (4 second) animated GIF or video.
 
 ## July 18, 2024
 
