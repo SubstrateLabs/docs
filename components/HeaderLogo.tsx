@@ -67,13 +67,13 @@ export function HeaderLogo() {
             Docs
           </Link>
           <Link
-            href="https://www.substrate.run/nodes"
+            href="https://substrate.run/nodes"
             className="px-3 py-2 hover:bg-[#292B33] hover:text-white bg-grid-small-white/[0.3] rounded"
           >
             Nodes
           </Link>
           <Link
-            href="/pricing"
+            href="https://substrate.run/pricing"
             className={cn(
               "px-3 py-2 hover:bg-[#292B33] hover:text-white bg-grid-small-white/[0.3] rounded",
             )}
@@ -81,7 +81,7 @@ export function HeaderLogo() {
             Pricing
           </Link>
           <Link
-            href="/company"
+            href="https://substrate.run/company"
             className={cn(
               "px-3 py-2 hover:bg-[#292B33] hover:text-white bg-grid-small-white/[0.3] rounded",
             )}
@@ -89,7 +89,7 @@ export function HeaderLogo() {
             Company
           </Link>
           <Link
-            href="https://blog.substrate.run"
+            href="https://substrate.run/pricing"
             className="px-3 py-2 hover:bg-[#292B33] hover:text-white bg-grid-small-white/[0.3] rounded"
           >
             Blog
