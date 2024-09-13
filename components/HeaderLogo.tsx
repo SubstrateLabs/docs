@@ -16,10 +16,7 @@ export function HeaderLogo() {
         </div>
       </Link>
       <div className="hidden lg:flex">
-        <Link
-          href="/"
-          className="ml-8 px-3 py-2 hover:bg-[#292B33] hover:text-white bg-grid-small-white/[0.3] rounded"
-        >
+        <Link href="/" className="ml-8 px-3 py-2 hover:bg-[#292B33] hover:text-white bg-grid-small-white/[0.3] rounded">
           Docs
         </Link>
       </div>
@@ -33,32 +30,14 @@ export function HeaderLogo() {
       </div>
       <div className="hidden lg:flex">
         <Link
-          href="https://substrate.run/pricing"
-          className="px-3 py-2 hover:bg-[#292B33] hover:text-white bg-grid-small-white/[0.3] rounded"
-        >
-          Pricing
-        </Link>
-      </div>
-      <div className="hidden lg:flex">
-        <Link
           href="https://substrate.run/company"
           className="px-3 py-2 hover:bg-[#292B33] hover:text-white bg-grid-small-white/[0.3] rounded"
         >
           Company
         </Link>
       </div>
-      <div className="hidden lg:flex">
-        <Link
-          href="https://blog.substrate.run"
-          className="px-3 py-2 hover:bg-[#292B33] hover:text-white bg-grid-small-white/[0.3] rounded"
-        >
-          Blog
-        </Link>
-      </div>
       <Sheet>
-        <SheetTrigger className="ml-4 inline lg:hidden text-2xl font-bold tracking-widest">
-          ...
-        </SheetTrigger>
+        <SheetTrigger className="ml-4 inline lg:hidden text-2xl font-bold tracking-widest">...</SheetTrigger>
         <SheetContent className="flex flex-col">
           <Link
             href="https://docs.substrate.run"
@@ -73,26 +52,10 @@ export function HeaderLogo() {
             Nodes
           </Link>
           <Link
-            href="https://substrate.run/pricing"
-            className={cn(
-              "px-3 py-2 hover:bg-[#292B33] hover:text-white bg-grid-small-white/[0.3] rounded",
-            )}
-          >
-            Pricing
-          </Link>
-          <Link
             href="https://substrate.run/company"
-            className={cn(
-              "px-3 py-2 hover:bg-[#292B33] hover:text-white bg-grid-small-white/[0.3] rounded",
-            )}
+            className={cn("px-3 py-2 hover:bg-[#292B33] hover:text-white bg-grid-small-white/[0.3] rounded")}
           >
             Company
-          </Link>
-          <Link
-            href="https://substrate.run/pricing"
-            className="px-3 py-2 hover:bg-[#292B33] hover:text-white bg-grid-small-white/[0.3] rounded"
-          >
-            Blog
           </Link>
         </SheetContent>
       </Sheet>
