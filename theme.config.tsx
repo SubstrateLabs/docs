@@ -33,17 +33,10 @@ const config: DocsThemeConfig = {
       },
     };
   },
-  navbar: {
-    extraContent: ExtraNavContent,
-  },
   nextThemes: {
     forcedTheme: "light",
   },
   darkMode: false,
-  docsRepositoryBase: "https://github.com/SubstrateLabs/docs/tree/main",
-  editLink: {
-    text: EditLink,
-  },
   head: () => {
     const { asPath } = useRouter();
     const { frontMatter } = useConfig();
@@ -53,10 +46,7 @@ const config: DocsThemeConfig = {
       <>
         <meta property="og:url" content={url} />
         <meta property="og:title" content={frontMatter.title || "Substrate"} />
-        <meta
-          property="og:description"
-          content={frontMatter.description || "Substrate Docs"}
-        />
+        <meta property="og:description" content={frontMatter.description || "Substrate Docs"} />
         <meta name="twitter:card" content="og_image_v3" />
         <meta name="twitter:site" content="@SubstrateLabs" />
       </>
